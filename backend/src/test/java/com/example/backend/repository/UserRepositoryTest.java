@@ -20,7 +20,7 @@ public class UserRepositoryTest {
 
     @BeforeEach
     void setup() {
-        Users user = new Users("abdo", "belhaje", "abdo@gmail.com", "1234", Role.CUSTOMER,
+        Users user = new Users("abdo", "belhaj", "abdo@gmail.com", "1234", Role.CUSTOMER,
                 new Timestamp(System.currentTimeMillis()));
         underTest.save(user);
     }

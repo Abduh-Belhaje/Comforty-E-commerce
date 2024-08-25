@@ -1,15 +1,13 @@
 spring:
-  main:
-    allow-bean-definition-overriding: true
   datasource:
-    url: jdbc:postgresql://localhost:5432/comfortyDB
-    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5433/comfortyDB
     username: postgres
     password: admin
+    driver-class-name: org.postgresql.Driver
+
   jpa:
-    open-in-view: false
     hibernate:
       ddl-auto: update
+      properties:
+        hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: true
-    database: postgresql
-    database-platform: org.hibernate.dialect.PostgreSQLDialect

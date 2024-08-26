@@ -8,5 +8,4 @@ import lombok.Data;
 public class SignInRequest {
 
     String u_email;
-    String u_psswd;
 }

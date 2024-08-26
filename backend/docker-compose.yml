@@ -10,5 +10,5 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: comfortyDB
-    volumes:
-       - ./data:/var/lib/postgresql/data
+    # volumes:
+    #    - ./data:/var/lib/postgresql/data

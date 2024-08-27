@@ -114,12 +114,10 @@ export default function Header() {
         <NavigationMenu>
           <NavigationMenuList className="gap-3 text-gray-400 text-sm ">
             <NavigationMenuItem>
-              <Select onValueChange={handleSelectChange}>
+              <Select>
                 <SelectTrigger className=" h-7 px-6 py-4 w-40 bg-white border border-gray-400 active:outline-none ">
                   <SelectValue
-                    placeholder={
-                      selectedValue ? selectedValue : "All Categories"
-                    }
+                    placeholder="All Categories"
                     className="placeholder-black"
                   />
                 </SelectTrigger>

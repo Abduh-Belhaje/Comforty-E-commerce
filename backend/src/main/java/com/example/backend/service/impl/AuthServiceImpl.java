@@ -1,7 +1,5 @@
 package com.example.backend.service.impl;
 
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import com.example.backend.dto.JwtResponse;
@@ -17,11 +15,7 @@ import com.example.backend.service.JwtService;
 
 import lombok.AllArgsConstructor;
 
-import org.springframework.security.core.Authentication;
-
 import java.sql.Timestamp;
-
-import org.springframework.security.authentication.AuthenticationManager;
 
 @Service
 @AllArgsConstructor
@@ -29,17 +23,12 @@ public class AuthServiceImpl implements AuthService {
 
     private UserRepository userRepository;
     private JwtService jwtService;
-    private final AuthenticationManager authenticationManager;
 
     @Override
     public JwtResponse Signin(SignInRequest request) throws EmailNotFoundException {
 
-        Authentication authentication = authenticationManager
-                .authenticate(new UsernamePasswordAuthenticationToken(request.getU_email(), ""));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
         var user = userRepository.findUserByEmail(request.getU_email())
-                .orElseThrow(() -> new EmailNotFoundException("Email doesn't exsit : " + request.getU_email()));
+                .orElseThrow(() -> new EmailNotFoundException("Email " + request.getU_email() +" doesn't exsit ."));
         var jwt = jwtService.generateToken(user);
 
         return new JwtResponse(jwt);

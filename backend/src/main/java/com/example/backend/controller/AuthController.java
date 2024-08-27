@@ -12,12 +12,21 @@ import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.EmailNotFoundException;
 import com.example.backend.service.AuthService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import lombok.AllArgsConstructor;
+
 @RestController
-@RequestMapping("auth")
+@RequestMapping("/auth")
+@AllArgsConstructor
 public class AuthController {
 
     private AuthService authService;
 
+    @Operation(summary = "Sign in", responses = {
+            @ApiResponse(responseCode = "200", description = "Successfully signed in"),
+            @ApiResponse(responseCode = "401", description = "Authentication failed")
+    })
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(SignInRequest request) {
 
@@ -29,6 +38,10 @@ public class AuthController {
 
     }
 
+    @Operation(summary = "Sign up", responses = {
+            @ApiResponse(responseCode = "200", description = "Successfully signed up"),
+            @ApiResponse(responseCode = "400", description = "Email already exists")
+    })
     @PostMapping("/signup")
     public ResponseEntity<?> signUp(SignUpRequest request) {
 

@@ -6,13 +6,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.backend.dto.JwtResponse;
 import com.example.backend.dto.SignInRequest;
 import com.example.backend.dto.SignUpRequest;
 import com.example.backend.exception.EmailAlreadyExistsException;
+import com.example.backend.exception.EmailNotFoundException;
 import com.example.backend.model.Role;
 import com.example.backend.model.Users;
 import com.example.backend.repository.UserRepository;
@@ -28,83 +28,81 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
-    private AuthService authService;
-    @Mock
-    private UserRepository userRepository;
-    @Mock
-    private JwtService jwtService;
-    @Mock
-    private AuthenticationManager authenticationManager;
-    @Mock
-    private PasswordEncoder passwordEncoder;
+        private AuthService authService;
+        @Mock
+        private UserRepository userRepository;
+        @Mock
+        private JwtService jwtService;
+        @Mock
+        private PasswordEncoder passwordEncoder;
 
-    @BeforeEach
-    void setup() {
-        authService = new AuthServiceImpl(userRepository, jwtService, authenticationManager);
-    }
+        @BeforeEach
+        void setup() {
+                authService = new AuthServiceImpl(userRepository, jwtService);
+        }
 
-    @Test
-    void signinForExistingUser() {
-        SignInRequest request = new SignInRequest(
-                "ali@gmail.com");
+        @Test
+        void signinForExistingUser() throws EmailNotFoundException {
+                SignInRequest request = new SignInRequest(
+                                "ali@gmail.com");
 
-        Users User = new Users();
+                Users User = new Users();
 
-        given(userRepository.findUserByEmail(request.getU_email()))
-                .willReturn(Optional.of(User));
+                given(userRepository.findUserByEmail(request.getU_email()))
+                                .willReturn(Optional.of(User));
 
-        given(jwtService.generateToken(User))
-                .willReturn("generated-token");
+                given(jwtService.generateToken(User))
+                                .willReturn("generated-token");
 
-        // Call the method under test
-        JwtResponse jwtResponse = authService.Signin(request);
+                // Call the method under test
+                JwtResponse jwtResponse = authService.Signin(request);
 
-        verify(userRepository).findUserByEmail("ali@gmail.com");
-        assertThat(jwtResponse.getToken()).isEqualTo("generated-token");
+                verify(userRepository).findUserByEmail("ali@gmail.com");
+                assertThat(jwtResponse.getToken()).isEqualTo("generated-token");
 
-    }
+        }
 
-    @Test
-    void signinForInExistingUser() throws IllegalArgumentException {
+        @Test
+        void signinForInExistingUser() throws EmailNotFoundException {
 
-        SignInRequest request = new SignInRequest(
-                "ali@gmail.com");
+                SignInRequest request = new SignInRequest(
+                                "ali@gmail.com");
 
-        assertThatThrownBy(() -> authService.Signin(request))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Email doesn't exsit : " + request.getU_email());
+                assertThatThrownBy(() -> authService.Signin(request))
+                                .isInstanceOf(EmailNotFoundException.class)
+                                .hasMessageContaining("Email doesn't exsit : " + request.getU_email());
 
-        // ensure that generateToken() func never called
-        Users user = new Users();
-        verify(jwtService, never()).generateToken(user);
-    }
+                // ensure that generateToken() func never called
+                Users user = new Users();
+                verify(jwtService, never()).generateToken(user);
+        }
 
-    @Test
-    void signupForNewUser() throws EmailAlreadyExistsException {
+        @Test
+        void signupForNewUser() throws EmailAlreadyExistsException {
 
-        SignUpRequest request = new SignUpRequest("abdo", "belhaje", "abdo@gmail.com");
+                SignUpRequest request = new SignUpRequest("abdo", "belhaje", "abdo@gmail.com");
 
-        when(userRepository.existsByEmail(request.getU_email()))
-                .thenReturn(false);
+                when(userRepository.existsByEmail(request.getU_email()))
+                                .thenReturn(false);
 
-        authService.Signup(request);
+                authService.Signup(request);
 
-        ArgumentCaptor<Users> UserArgumentCaptor = ArgumentCaptor.forClass(Users.class);
-        verify(userRepository).save(UserArgumentCaptor.capture());
-        assertThat(UserArgumentCaptor.getValue().getU_email()).isEqualTo(request.getU_email());
-        assertThat(UserArgumentCaptor.getValue().getRole()).isEqualTo(Role.CUSTOMER);
-    }
+                ArgumentCaptor<Users> UserArgumentCaptor = ArgumentCaptor.forClass(Users.class);
+                verify(userRepository).save(UserArgumentCaptor.capture());
+                assertThat(UserArgumentCaptor.getValue().getU_email()).isEqualTo(request.getU_email());
+                assertThat(UserArgumentCaptor.getValue().getRole()).isEqualTo(Role.CUSTOMER);
+        }
 
-    @Test
-    void signupForExistingUser() {
-        SignUpRequest request = new SignUpRequest("abdo", "belhaje", "abdo@gmail.com");
+        @Test
+        void signupForExistingUser() {
+                SignUpRequest request = new SignUpRequest("abdo", "belhaje", "abdo@gmail.com");
 
-        when(userRepository.existsByEmail(request.getU_email()))
-                .thenReturn(true);
+                when(userRepository.existsByEmail(request.getU_email()))
+                                .thenReturn(true);
 
-        assertThatThrownBy(() -> authService.Signup(request))
-                .isInstanceOf(EmailAlreadyExistsException.class)
-                .hasMessage("Email already exists in the database.");
-    }
+                assertThatThrownBy(() -> authService.Signup(request))
+                                .isInstanceOf(EmailAlreadyExistsException.class)
+                                .hasMessage("Email already exists in the database.");
+        }
 
 }

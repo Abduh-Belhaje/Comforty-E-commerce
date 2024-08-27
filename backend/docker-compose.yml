@@ -10,5 +10,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: comfortyDB
+    volumes:
+      - ./src/main/resources/:/docker-entrypoint-initdb.d/
     # volumes:
     #    - ./data:/var/lib/postgresql/data

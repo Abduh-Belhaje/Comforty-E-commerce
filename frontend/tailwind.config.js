@@ -77,6 +77,19 @@ module.exports = {
           900: "#374043",
           950: "#25292c",
         },
+        "blue-lagoon": {
+          50: "#e7fffb",
+          100: "#c2fff4",
+          200: "#8cffea",
+          300: "#3dffdb",
+          400: "#00ffd0",
+          500: "#00ffee",
+          600: "#00d9e3",
+          700: "#00abb5",
+          800: "#008790",
+          900: "#007580",
+          950: "#004a55",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -96,6 +109,9 @@ module.exports = {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+      },
+      height: {
+        75: "75px",
       },
     },
   },

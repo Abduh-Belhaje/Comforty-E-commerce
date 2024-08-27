@@ -110,27 +110,64 @@ export default function Header() {
           </Button>
         </div>
       </div>
-      <div className="container mx-auto flex justify-center">
-        <NavigationMenu className="bg-red-600 justify-center">
-          <NavigationMenuList className="gap-3">
+      <div className="bg-white h-75 border container mx-auto flex justify-center gap-96">
+        <NavigationMenu>
+          <NavigationMenuList className="gap-3 text-gray-400 text-sm ">
             <NavigationMenuItem>
-              <a href="/#">
+              <Select onValueChange={handleSelectChange}>
+                <SelectTrigger className=" h-7 px-6 py-4 w-40 bg-white border border-gray-400 active:outline-none ">
+                  <SelectValue
+                    placeholder={
+                      selectedValue ? selectedValue : "All Categories"
+                    }
+                    className="placeholder-black"
+                  />
+                </SelectTrigger>
+                <SelectContent className="bg-white text-slate-400 border-none rounded-t-none ">
+                  <SelectItem
+                    value="All_Categories"
+                    className="hover:bg-slate-300 focus:text-slate-500 transition duration-300 w-40"
+                  >
+                    All Categories
+                  </SelectItem>
+                  <SelectItem
+                    value="Couch"
+                    className="hover:bg-slate-300 focus:text-slate-500 w-40"
+                  >
+                    Couch
+                  </SelectItem>
+                  <SelectItem
+                    value="Chair"
+                    className="hover:bg-slate-300 focus:text-slate-500 w-40"
+                  >
+                    Chair
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </NavigationMenuItem>
+            <NavigationMenuItem className="hover:text-blue-lagoon-800">
+              <a href="/">
                 <NavigationMenuLink>Home</NavigationMenuLink>
               </a>
             </NavigationMenuItem>
-            <NavigationMenuItem>
+            <NavigationMenuItem className="hover:text-blue-lagoon-800">
               <a href="/#">
                 <NavigationMenuLink>Shop</NavigationMenuLink>
               </a>
             </NavigationMenuItem>
-            <NavigationMenuItem>
+            <NavigationMenuItem className="hover:text-blue-lagoon-800">
               <a href="/#">
                 <NavigationMenuLink>Product</NavigationMenuLink>
               </a>
             </NavigationMenuItem>
-            <NavigationMenuItem>Contact (808)555-0111</NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
+        <div className="ml-64 flex justify-center items-center">
+          <span className="text-sm text-gray-400">
+            Contact
+            <span className="text-gray-800 font-semibold"> (808)555-0111</span>
+          </span>
+        </div>
       </div>
     </>
   );

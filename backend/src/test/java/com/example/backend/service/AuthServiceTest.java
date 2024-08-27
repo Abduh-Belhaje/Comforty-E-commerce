@@ -70,7 +70,7 @@ class AuthServiceTest {
 
                 assertThatThrownBy(() -> authService.Signin(request))
                                 .isInstanceOf(EmailNotFoundException.class)
-                                .hasMessageContaining("Email doesn't exsit : " + request.getU_email());
+                                .hasMessageContaining("Email " + request.getU_email() + " doesn't exsit .");
 
                 // ensure that generateToken() func never called
                 Users user = new Users();

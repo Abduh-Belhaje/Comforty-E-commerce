@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AllArgsConstructor;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/v1/auth")
 @AllArgsConstructor
 public class AuthController {
 

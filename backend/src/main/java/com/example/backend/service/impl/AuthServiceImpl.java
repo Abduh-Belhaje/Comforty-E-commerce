@@ -21,14 +21,14 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
-    private UserRepository userRepository;
-    private JwtService jwtService;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
     @Override
     public JwtResponse Signin(SignInRequest request) throws EmailNotFoundException {
 
         var user = userRepository.findUserByEmail(request.getU_email())
-                .orElseThrow(() -> new EmailNotFoundException("Email " + request.getU_email() +" doesn't exsit ."));
+                .orElseThrow(() -> new EmailNotFoundException("Email " + request.getU_email() + " doesn't exsit ."));
         var jwt = jwtService.generateToken(user);
 
         return new JwtResponse(jwt);

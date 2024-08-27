@@ -15,10 +15,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.example.backend.service.UserService;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Configuration
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class SecurityConfig {
 
     private final JwtAuthFilter jwtAuthenticationFilter;

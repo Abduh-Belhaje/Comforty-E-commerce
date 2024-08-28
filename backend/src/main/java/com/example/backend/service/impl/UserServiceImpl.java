@@ -8,10 +8,10 @@ import org.springframework.stereotype.Service;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.UserService;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 
-@RequiredArgsConstructor
 @Service
+@AllArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;

@@ -1,7 +1,6 @@
-# docker-compose.yml
 version: '3.1'
 services:
-  db:
+  postgres-db:
     image: postgres
     restart: always
     ports:
@@ -10,5 +9,26 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: admin
       POSTGRES_DB: comfortyDB
+    container_name: postgres-db
     volumes:
-       - ./data:/var/lib/postgresql/data
+      - ./src/main/resources/:/docker-entrypoint-initdb.d/
+    networks:
+      - mynetwork
+
+  comforty:
+    image: comforty-backend
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/comfortyDB
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=admin
+    container_name: comforty-backend
+    depends_on:
+      - postgres-db
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge

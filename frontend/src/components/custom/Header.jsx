@@ -61,7 +61,7 @@ export default function Header() {
                       value="system"
                       className="focus:text-white hover:bg-blue-950 "
                     >
-                      Es
+                      Eng
                     </SelectItem>
                   </SelectContent>
                 </Select>
@@ -110,7 +110,7 @@ export default function Header() {
           </Button>
         </div>
       </div>
-      <div className="bg-white h-75 border container mx-auto flex justify-center gap-96">
+      <div className="bg-white h-75 border flex justify-around">
         <NavigationMenu>
           <NavigationMenuList className="gap-3 text-gray-400 text-sm ">
             <NavigationMenuItem>

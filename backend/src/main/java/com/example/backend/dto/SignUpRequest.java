@@ -13,5 +13,15 @@ public class SignUpRequest {
 
     String u_email;
 
-    String u_password;
+    public String getU_email() {
+        return u_email;
+    }
+
+    public String getLast_name() {
+        return last_name;
+    }
+
+    public String getFirst_name() {
+        return first_name;
+    }
 }

@@ -4,7 +4,9 @@ import java.sql.Timestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +20,8 @@ import lombok.Setter;
 public class Chairs {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "chair_seq")
+    @SequenceGenerator(name = "chair_seq", sequenceName = "catalog.chair_seq", allocationSize = 1)
     private int chair_id;
 
     @Column(nullable = false)

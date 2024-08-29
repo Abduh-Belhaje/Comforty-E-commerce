@@ -28,6 +28,8 @@ import Logo from "@/assets/Logo.png";
 
 import { Button } from "@/components/ui/button";
 
+import { Link } from "react-router-dom";
+
 export default function Header() {
   return (
     <>
@@ -105,7 +107,7 @@ export default function Header() {
           <Button variant="outline">
             <Heart className="w-4 h-4" />
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" as={Link} to="/">
             <User2 className="w-4 h-4" />
           </Button>
         </div>
@@ -123,22 +125,46 @@ export default function Header() {
                 </SelectTrigger>
                 <SelectContent className="bg-white text-slate-400 border-none rounded-t-none ">
                   <SelectItem
-                    value="All_Categories"
+                    value="all_Categories"
                     className="hover:bg-slate-300 focus:text-slate-500 transition duration-300 w-40"
                   >
                     All Categories
                   </SelectItem>
                   <SelectItem
-                    value="Couch"
+                    value="sofa"
                     className="hover:bg-slate-300 focus:text-slate-500 w-40"
                   >
-                    Couch
+                    Sofa
                   </SelectItem>
                   <SelectItem
-                    value="Chair"
+                    value="arm_chair"
                     className="hover:bg-slate-300 focus:text-slate-500 w-40"
                   >
-                    Chair
+                    Arm Chair
+                  </SelectItem>
+                  <SelectItem
+                    value="wing_chair"
+                    className="hover:bg-slate-300 focus:text-slate-500 w-40"
+                  >
+                    Wing Chair
+                  </SelectItem>
+                  <SelectItem
+                    value="desk_chair"
+                    className="hover:bg-slate-300 focus:text-slate-500 w-40"
+                  >
+                    Desk Chair
+                  </SelectItem>
+                  <SelectItem
+                    value="wooden_chair"
+                    className="hover:bg-slate-300 focus:text-slate-500 w-40"
+                  >
+                    Wooden Chair
+                  </SelectItem>
+                  <SelectItem
+                    value="park_bench"
+                    className="hover:bg-slate-300 focus:text-slate-500 w-40"
+                  >
+                    Park Bench
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -150,12 +176,12 @@ export default function Header() {
             </NavigationMenuItem>
             <NavigationMenuItem className="hover:text-blue-lagoon-800">
               <a href="/#">
-                <NavigationMenuLink>Shop</NavigationMenuLink>
+                <NavigationMenuLink>New Arrivals</NavigationMenuLink>
               </a>
             </NavigationMenuItem>
             <NavigationMenuItem className="hover:text-blue-lagoon-800">
               <a href="/#">
-                <NavigationMenuLink>Product</NavigationMenuLink>
+                <NavigationMenuLink>Sales/Offer</NavigationMenuLink>
               </a>
             </NavigationMenuItem>
           </NavigationMenuList>

@@ -1,43 +1,32 @@
-import { Button } from "@/components/ui/button";
-import './App.css';
+import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import Header from "./components/custom/Header";
-import { useEffect } from "react";
-import { useUser } from "@clerk/clerk-react";
+import "./App.css";
+import AlertDialogComponent from "./components/custom/AlertDialogComponent";
 
 function App() {
-  const { user } = useUser();
+  const [showAlert, setShowAlert] = useState(false);
+  const [pathname, setPathname] = useState("");
 
   useEffect(() => {
-    if (user) {
-      // const fetchUserData = async () => {
-      //   try {
-      //     const userData = {
-      //       firstname: user.firstName,
-      //       lastname: user.lastName,
-      //       email: user.emailAddresses[0]?.emailAddress, // Adjust based on the structure of `emailAddresses`
-      //     };
+    const storedPath = sessionStorage.getItem("previousPath");
 
-      //     // Call the API function to send user data
-      //     const response = await fetchUserDataFromAuthApi(userData);
-
-      //     // Process the response as needed
-      //     console.log('User data from API:', response);
-      //   } catch (error) {
-      //     console.error('Failed to fetch user data:', error);
-      //   }
-      // };
-
-      // fetchUserData();
+    if (storedPath) {
+      setPathname(storedPath);
+      setShowAlert(true);
+      sessionStorage.removeItem("previousPath"); // Optionally remove path after use
     }
-    console.log(user);
-    
-  }, [user]);
+  }, []);
 
   return (
     <>
       <Header />
       <Outlet />
+      <AlertDialogComponent
+        open={showAlert}
+        onClose={() => setShowAlert(false)}
+        pathname={pathname} // Pass pathname as a prop
+      />
     </>
   );
 }

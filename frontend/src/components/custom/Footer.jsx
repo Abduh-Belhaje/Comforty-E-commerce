@@ -14,7 +14,7 @@ import { Input } from "@/components/ui/input";
 
 const Footer = () => {
   return (
-    <div className="border border-black py-5">
+    <div className="py-5">
       <footer className="bg-white my-3 text-slate-400 border-y mx-5 text-sm py-4 flex justify-around">
         <div className="w-fit flex flex-col  space-y-4">
           <div className="">
@@ -27,7 +27,7 @@ const Footer = () => {
             </p>
           </div>
 
-          <div className="container mx-auto flex justify-center space-x-4">
+          <div className="gitflex justify-center space-x-4">
             {/* Facebook */}
             <a
               href="https://facebook.com"
@@ -155,9 +155,10 @@ const Footer = () => {
           </label>
           <div className="flex space-x-2">
             <Input
+              placeholder="email"
               type="email"
               id="newsletter"
-              className="border border-input h-11 w-72 "
+              className="border border-input h-11 w-72 placeholder:text-slate-400"
             />
             <Button className="bg-blue-lagoon-800 w-32 h-11 hover:bg-blue-lagoon-900">
               Subscribe
@@ -166,6 +167,11 @@ const Footer = () => {
           <div>Lorem ipsum dolor sit amet consectetur adipisicing elit</div>
         </div>
       </footer>
+      <div className=" text-center pt- mt-4">
+        <p className="text-xs text-slate-500">
+          &copy; {new Date().getFullYear()} Comforty. All rights reserved.
+        </p>
+      </div>
     </div>
   );
 };

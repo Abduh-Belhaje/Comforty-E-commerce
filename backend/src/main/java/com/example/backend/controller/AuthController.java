@@ -3,6 +3,7 @@ package com.example.backend.controller;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -28,7 +29,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Authentication failed")
     })
     @PostMapping("/signin")
-    public ResponseEntity<?> signIn(SignInRequest request) {
+    public ResponseEntity<?> signIn(@RequestBody SignInRequest request) {
 
         try {
             return ResponseEntity.ok(authService.Signin(request));
@@ -43,7 +44,7 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Email already exists")
     })
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(SignUpRequest request) {
+    public ResponseEntity<?> signUp(@RequestBody SignUpRequest request) {
 
         try {
             return ResponseEntity.ok(authService.Signup(request));

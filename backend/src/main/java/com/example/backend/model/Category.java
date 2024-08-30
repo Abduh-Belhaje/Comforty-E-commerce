@@ -14,16 +14,16 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(schema = "catalog")
+@Table(name = "Categories", schema = "catalog")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Categories {
+public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "categories_seq")
     @SequenceGenerator(name = "categories_seq", sequenceName = "catalog.categories_seq", allocationSize = 1)
-    private int ctg_id;
+    private Long ctg_id;
 
     private String name;
 
@@ -31,4 +31,10 @@ public class Categories {
 
     @Column(nullable = false)
     private Timestamp created_at;
+
+    public Category(String name, String descpcrition, Timestamp created_at) {
+        this.name = name;
+        this.descpcrition = descpcrition;
+        this.created_at = created_at;
+    }
 }

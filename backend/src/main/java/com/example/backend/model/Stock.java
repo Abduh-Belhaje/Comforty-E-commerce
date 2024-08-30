@@ -15,7 +15,7 @@ import lombok.Setter;
 public class Stock {
 
     @Id
-    private int chair_id;
+    private Long chair_id;
 
     private int quantity;
 }

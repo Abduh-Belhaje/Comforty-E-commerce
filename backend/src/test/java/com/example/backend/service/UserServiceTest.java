@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.example.backend.model.Users;
+import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.impl.UserServiceImpl;
 import static org.mockito.BDDMockito.given;
@@ -33,8 +33,8 @@ public class UserServiceTest {
     void loadUserDetails() {
         // case 1 : inexisting email
         String userEmail = "abdo@gmail.com";
-        Users user = new Users();
-        user.setU_email(userEmail);
+        User user = new User();
+        user.setEmail(userEmail);
 
         given(userRepository.findUserByEmail(userEmail))
                 .willReturn(Optional.of(user));

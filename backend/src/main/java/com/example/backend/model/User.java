@@ -26,11 +26,11 @@ import jakarta.persistence.SequenceGenerator;
  */
 
 @Entity
-@Table(schema = "accounts")
+@Table(name = "users", schema = "accounts")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Users implements UserDetails {
+public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_seq")
@@ -44,7 +44,7 @@ public class Users implements UserDetails {
     private String last_name;
 
     @Column(nullable = false, unique = true)
-    private String u_email;
+    private String email;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -53,11 +53,11 @@ public class Users implements UserDetails {
     @Column(nullable = false)
     private Timestamp created_at;
 
-    public Users(String first_name, String last_name, String u_email, Role role,
+    public User(String first_name, String last_name, String email, Role role,
             Timestamp created_at) {
         this.first_name = first_name;
         this.last_name = last_name;
-        this.u_email = u_email;
+        this.email = email;
         this.role = role;
         this.created_at = created_at;
     }
@@ -69,7 +69,7 @@ public class Users implements UserDetails {
 
     @Override
     public String getUsername() {
-        return u_email;
+        return email;
     }
 
     public String getFullName() {

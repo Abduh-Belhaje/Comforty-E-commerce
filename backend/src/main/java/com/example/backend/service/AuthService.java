@@ -1,8 +1,8 @@
 package com.example.backend.service;
 
-import com.example.backend.dto.JwtResponse;
-import com.example.backend.dto.SignInRequest;
-import com.example.backend.dto.SignupRequest;
+import com.example.backend.dto.auth.JwtResponse;
+import com.example.backend.dto.auth.SignInRequest;
+import com.example.backend.dto.auth.SignupRequest;
 import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.EmailNotFoundException;
 

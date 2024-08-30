@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.example.backend.model.Role;
-import com.example.backend.model.Users;
+import com.example.backend.model.User;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
@@ -20,7 +20,7 @@ public class UserRepositoryTest {
 
     @BeforeEach
     void setup() {
-        Users user = new Users("abdo", "belhaj", "abdo@gmail.com", Role.CUSTOMER,
+        User user = new User("abdo", "belhaj", "abdo@gmail.com", Role.CUSTOMER,
                 new Timestamp(System.currentTimeMillis()));
         underTest.save(user);
     }
@@ -45,7 +45,7 @@ public class UserRepositoryTest {
     void getUserInfoByEmail() {
 
         String email = "abdo@gmail.com";
-        Optional<Users> user = underTest.findUserByEmail(email);
+        Optional<User> user = underTest.findUserByEmail(email);
 
         // email is unique so I don't need to add more checks
         assertThat(user).isPresent();

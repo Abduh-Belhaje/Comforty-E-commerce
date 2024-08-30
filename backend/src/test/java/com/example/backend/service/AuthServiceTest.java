@@ -8,13 +8,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.example.backend.dto.JwtResponse;
-import com.example.backend.dto.SignInRequest;
-import com.example.backend.dto.SignupRequest;
+import com.example.backend.dto.auth.JwtResponse;
+import com.example.backend.dto.auth.SignInRequest;
+import com.example.backend.dto.auth.SignupRequest;
 import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.EmailNotFoundException;
 import com.example.backend.model.Role;
-import com.example.backend.model.Users;
+import com.example.backend.model.User;
 import com.example.backend.repository.UserRepository;
 import com.example.backend.service.impl.AuthServiceImpl;
 
@@ -46,7 +46,7 @@ class AuthServiceTest {
                 SignInRequest request = new SignInRequest(
                                 "ali@gmail.com");
 
-                Users User = new Users();
+                User User = new User();
 
                 given(userRepository.findUserByEmail(request.getU_email()))
                                 .willReturn(Optional.of(User));
@@ -73,7 +73,7 @@ class AuthServiceTest {
                                 .hasMessageContaining("Email " + request.getU_email() + " doesn't exsit .");
 
                 // ensure that generateToken() func never called
-                Users user = new Users();
+                User user = new User();
                 verify(jwtService, never()).generateToken(user);
         }
 
@@ -87,9 +87,9 @@ class AuthServiceTest {
 
                 authService.Signup(request);
 
-                ArgumentCaptor<Users> UserArgumentCaptor = ArgumentCaptor.forClass(Users.class);
+                ArgumentCaptor<User> UserArgumentCaptor = ArgumentCaptor.forClass(User.class);
                 verify(userRepository).save(UserArgumentCaptor.capture());
-                assertThat(UserArgumentCaptor.getValue().getU_email()).isEqualTo(request.getU_email());
+                assertThat(UserArgumentCaptor.getValue().getEmail()).isEqualTo(request.getU_email());
                 assertThat(UserArgumentCaptor.getValue().getRole()).isEqualTo(Role.CUSTOMER);
         }
 

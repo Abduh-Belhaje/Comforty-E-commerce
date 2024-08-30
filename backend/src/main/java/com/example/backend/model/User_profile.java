@@ -5,7 +5,9 @@ import java.sql.Timestamp;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,7 +21,8 @@ import lombok.Setter;
 public class User_profile {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_profile_seq")
+    @SequenceGenerator(name = "user_profile_seq", sequenceName = "accounts.user_profile_seq", allocationSize = 1)
     private Long profile_id;
 
     @Column(nullable = false)

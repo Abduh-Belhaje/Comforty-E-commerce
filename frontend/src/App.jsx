@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Outlet } from "react-router-dom";
 import Header from "./components/custom/Header";
 import Footer from "./components/custom/Footer";
+
 import { useEffect } from "react";
 import { useUser } from "@clerk/clerk-react";
 
@@ -17,21 +18,17 @@ function App() {
       //       lastname: user.lastName,
       //       email: user.emailAddresses[0]?.emailAddress, // Adjust based on the structure of `emailAddresses`
       //     };
-
       //     // Call the API function to send user data
       //     const response = await fetchUserDataFromAuthApi(userData);
-
       //     // Process the response as needed
       //     console.log('User data from API:', response);
       //   } catch (error) {
       //     console.error('Failed to fetch user data:', error);
       //   }
       // };
-
       // fetchUserData();
     }
     console.log(user);
-    
   }, [user]);
   return (
     <>
@@ -39,8 +36,6 @@ function App() {
       <Outlet />
 
       <Footer />
-
-
     </>
   );
 }

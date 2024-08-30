@@ -7,11 +7,10 @@ import lombok.Data;
 @AllArgsConstructor
 public class SignUpRequest {
 
-    String first_name;
+    private String first_name;
 
-    String last_name;
+    private String last_name;
 
-    String u_email;
+    private String u_email;
 
-    String u_password;
 }

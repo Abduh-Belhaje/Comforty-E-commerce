@@ -3,7 +3,6 @@ package com.example.backend.repository;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.sql.Timestamp;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +28,7 @@ public class CategoryRepositoryTest {
     void shouldFindCategoryByName() {
         String name = "ctg1";
 
-        Optional<Long> id = underTest.findCategoryByName(name);
+        Long id = underTest.findCategoryByName(name);
         assertNotNull(id);
     }
 }

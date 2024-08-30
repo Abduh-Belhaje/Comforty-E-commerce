@@ -4,7 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend.dto.chair.AddChairDTO;
 import com.example.backend.exception.FailedAddingChairException;
@@ -34,5 +36,11 @@ public class ChairController {
         } catch (FailedAddingChairException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    @PostMapping("/test")
+    public void test(@RequestParam("testfile") MultipartFile request) {
+
+        System.out.println(request);
     }
 }

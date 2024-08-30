@@ -27,14 +27,14 @@ public class Category {
 
     private String name;
 
-    private String descpcrition;
+    private String description;
 
     @Column(nullable = false)
     private Timestamp created_at;
 
-    public Category(String name, String descpcrition, Timestamp created_at) {
+    public Category(String name, String description, Timestamp created_at) {
         this.name = name;
-        this.descpcrition = descpcrition;
+        this.description = description;
         this.created_at = created_at;
     }
 }

@@ -17,7 +17,7 @@ public class ChairRepositoryTest {
 
     @BeforeEach
     void setup() {
-        Chair chair = new Chair(1L, "alpha", "abab", "NEW", "abab", "red", 10, 10,
+        Chair chair = new Chair(1L, "alpha", "abab", "abab", "red", 10, 10,
                 new Timestamp(System.currentTimeMillis()));
 
         underTest.save(chair);

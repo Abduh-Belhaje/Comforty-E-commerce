@@ -11,23 +11,23 @@ services:
       POSTGRES_DB: comfortyDB
     container_name: postgres-db
     volumes:
-      - ./src/main/resources/:/docker-entrypoint-initdb.d/
+      - ./db/:/docker-entrypoint-initdb.d/
     networks:
       - mynetwork
   
-  comforty:
-    build: .
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/comfortyDB
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=admin
-    container_name: comforty-backend
-    depends_on:
-      - postgres-db
-    networks:
-      - mynetwork
+  # comforty:
+  #   build: .
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/comfortyDB
+  #     - SPRING_DATASOURCE_USERNAME=postgres
+  #     - SPRING_DATASOURCE_PASSWORD=admin
+  #   container_name: comforty-backend
+  #   depends_on:
+  #     - postgres-db
+  #   networks:
+  #     - mynetwork
 
 networks:
   mynetwork:

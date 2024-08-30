@@ -1,5 +1,7 @@
 package com.example.backend.dto.chair;
 
+import java.util.List;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -19,8 +21,8 @@ public class AddChairDTO {
     @JsonProperty("categoty")
     private String categoty;
 
-    @JsonProperty("image")
-    private MultipartFile image;
+    @JsonProperty("images")
+    private List<MultipartFile> images;
 
     @JsonProperty("description")
     private String description;
@@ -29,9 +31,9 @@ public class AddChairDTO {
     private String color;
 
     @JsonProperty("height")
-    private float height;
+    private String height;
 
     @JsonProperty("weight")
-    private float weight;
+    private String weight;
 
 }

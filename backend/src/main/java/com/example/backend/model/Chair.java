@@ -31,9 +31,6 @@ public class Chair {
     private String name;
 
     @Column(nullable = false)
-    private String picture_url;
-
-    @Column(nullable = false)
     private String status;
 
     @Column(nullable = false)
@@ -53,11 +50,10 @@ public class Chair {
     @Column(nullable = false)
     private Timestamp created_at;
 
-    public Chair(Long ctg_id, String name, String picture_url, String status, String description, String color,
+    public Chair(Long ctg_id, String name, String status, String description, String color,
             float height, float weight, Timestamp created_at) {
         this.ctg_id = ctg_id;
         this.name = name;
-        this.picture_url = picture_url;
         this.status = status;
         this.description = description;
         this.color = color;

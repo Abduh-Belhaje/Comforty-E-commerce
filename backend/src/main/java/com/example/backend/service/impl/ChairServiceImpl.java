@@ -3,6 +3,7 @@ package com.example.backend.service.impl;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend.dto.chair.AddChairDTO;
 import com.example.backend.exception.CategoryNameNotFoundException;
@@ -17,10 +18,10 @@ import com.example.backend.service.ChairService;
 
 import com.example.backend.service.StorageService;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class ChairServiceImpl implements ChairService {
 
     private final ChairRepository chairRepository;
@@ -36,14 +37,16 @@ public class ChairServiceImpl implements ChairService {
             Chair chair = chairMapper.toEntity(newChair);
 
             // Get the category ID correspanding to the current Category name
-            Long ctgID = categoryRepository.findCategoryByName(newChair.getCategoty())
-                    .orElseThrow(
-                            () -> new CategoryNameNotFoundException(newChair.getCategoty() + "Catgeory Not found"));
+            Long ctgID = categoryRepository.findCategoryByName(newChair.getCategoty());
+            if (ctgID == null) {
+                throw new CategoryNameNotFoundException(newChair.getCategoty() + "Catgeory Not found");
+            }
 
             // push the image to amazon s3 and get the image_url
-            String fileUrl = storageService.uploadFile(newChair.getImage());
+            for (MultipartFile image : newChair.getImages()) {
+                String fileUrl = storageService.uploadFile(image);
+            }
 
-            chair.setPicture_url(fileUrl);
             chair.setCtg_id(ctgID);
 
             chairRepository.save(chair);

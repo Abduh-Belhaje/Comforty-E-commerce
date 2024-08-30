@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS catalog.categories (
     ctg_id BIGINT NOT NULL PRIMARY KEY,
     created_at TIMESTAMP,
     name VARCHAR(255),
-    descpcrition VARCHAR(255)
+    description VARCHAR(255)
 );
 
 
@@ -45,9 +45,9 @@ CREATE TABLE IF NOT EXISTS catalog.chairs (
     picture_url VARCHAR(255),
     status VARCHAR(10),
     color VARCHAR(10),
-    height NUMERIC(4,2),
-    weight NUMERIC(4,2),
-    discount NUMERIC(4,2),
+    height VARCHAR(4),
+    weight VARCHAR(4),
+    discount VARCHAR(4),
     descpcrition VARCHAR(255)
 );
 

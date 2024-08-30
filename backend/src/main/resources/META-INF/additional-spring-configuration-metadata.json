@@ -18,5 +18,10 @@
     "name": "application.bucket.name",
     "type": "java.lang.String",
     "description": "A description for 'application.bucket.name'"
+  },
+  {
+    "name": "cloud.aws.stack.auto",
+    "type": "java.lang.String",
+    "description": "A description for 'cloud.aws.stack.auto'"
   }
 ]}

@@ -17,7 +17,7 @@ public class ChairMapperTest {
     @Test
     void mapFromChairDtoToChair() {
 
-        AddChairDTO chairDTO = new AddChairDTO("xx", "xx", null, "ooo", "red", 10, 10);
+        AddChairDTO chairDTO = new AddChairDTO("xx", "xx", null, "ooo", "red", "10", "10");
 
         Chair chair = chairMapper.toEntity(chairDTO);
 

@@ -33,7 +33,7 @@ import { Link } from "react-router-dom";
 export default function Header() {
   return (
     <>
-      <div className="h-11 bg-martinique-950 flex items-center justify-center gap-96">
+      <div className="h-7 bg-martinique-950 flex items-center justify-center gap-96">
         <span className="text-slate-400 text-sm flex items-center justify-center mr-64">
           <Check className="h-4 w-4 mr-1" />
           Free shippin for orders over 50$
@@ -87,7 +87,7 @@ export default function Header() {
           </NavigationMenu>
         </span>
       </div>
-      <div className="h-20 bg-porcelain-100 flex items-center justify-around ">
+      <div className="h-16 bg-porcelain-100 flex items-center justify-around ">
         <img src={Logo} alt="" className="h-10 w-40" />
         <div className="bg-white border border-input rounded-md px-3 flex justify-center items-center">
           <Input
@@ -112,7 +112,7 @@ export default function Header() {
           </Button>
         </div>
       </div>
-      <div className="bg-white h-75 border flex justify-around">
+      <div className="bg-white h-16 border flex justify-around">
         <NavigationMenu>
           <NavigationMenuList className="gap-3 text-gray-400 text-sm ">
             <NavigationMenuItem>

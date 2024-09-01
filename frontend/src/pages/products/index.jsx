@@ -1,5 +1,5 @@
-import Filter from "./components/filter";
-import ListOfProduct from "./components/listOfProduct";
+import Filter from "./components/Filter";
+import ListOfProduct from "./components/ListOfProduct";
 
 function Products() {
   return (

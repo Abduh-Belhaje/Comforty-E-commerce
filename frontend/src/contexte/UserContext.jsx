@@ -1,40 +1,32 @@
-// UserContext.js
-import React, { createContext, useState, useEffect, useContext } from 'react';
-import { useUser as useClerkUser, useAuth } from '@clerk/clerk-react';
-import { signUpUser } from '../services/authService';
+import React, { createContext, useState, useContext, useEffect } from "react";
+import { useUser } from "@clerk/clerk-react";
 
 const UserContext = createContext();
 
 export function UserProvider({ children }) {
-  const { user: clerkUser } = useClerkUser();
-  const [user, setUser] = useState(null);
-  const [token, setToken] = useState(null);
+  const { user } = useUser();
+  const [userUp, setUserUp] = useState(null); // For sign-up data
+  const [userIn, setUserIn] = useState(null); // For sign-in data
 
   useEffect(() => {
-    const handleSignUp = async (userData) => {
-      try {
-        const response = await signUpUser(userData); 
-        localStorage.setItem('accessToken', response.token); 
-        console.log('Sign-up successful, token stored:', response.token);
-      } catch (error) {
-        console.error('Sign-up failed:', error);
-      }
-    };
+    if (user) {
+      const userEmail = user.primaryEmailAddress?.emailAddress;
+      setUserIn({ u_email: userEmail });
 
-    if (clerkUser) {
-      const userData = {
-        u_email: clerkUser.primaryEmailAddress?.emailAddress,
-        first_name: clerkUser.firstName,
-        last_name: clerkUser.lastName,
-      };
-      setUser(userData);
-      handleSignUp(userData); 
-      console.log('User data:', userData);
+      if (!userUp) {
+        const userData = {
+          u_email: userEmail,
+          first_name: user.firstName,
+          last_name: user.lastName,
+        };
+        setUserUp(userData);
+        console.log("User data:", userData);
+      }
     }
-  }, [clerkUser]);
+  }, [user, userUp]);
 
   return (
-    <UserContext.Provider value={{ user, token }}>
+    <UserContext.Provider value={{ userUp, userIn }}>
       {children}
     </UserContext.Provider>
   );

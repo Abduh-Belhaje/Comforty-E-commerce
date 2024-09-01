@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.example.backend.model.Image;
 
 @Repository
-public interface ImageRepository extends JpaRepository<Image, String> {
+public interface ImageRepository extends JpaRepository<Image, Long> {
 
 }

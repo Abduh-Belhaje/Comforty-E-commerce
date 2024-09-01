@@ -9,11 +9,14 @@ import com.example.backend.dto.chair.AddChairDTO;
 import com.example.backend.exception.CategoryNameNotFoundException;
 import com.example.backend.exception.FailedAddingChairException;
 import com.example.backend.exception.FileConvertingException;
+import com.example.backend.exception.ImageFieldNullException;
 import com.example.backend.exception.UploadFileException;
 import com.example.backend.mapper.ChairMapper;
 import com.example.backend.model.Chair;
+import com.example.backend.model.Image;
 import com.example.backend.repository.CategoryRepository;
 import com.example.backend.repository.ChairRepository;
+import com.example.backend.repository.ImageRepository;
 import com.example.backend.service.ChairService;
 
 import com.example.backend.service.StorageService;
@@ -27,6 +30,7 @@ public class ChairServiceImpl implements ChairService {
     private final ChairRepository chairRepository;
     private final CategoryRepository categoryRepository;
     private final StorageService storageService;
+    private final ImageRepository imageRepository;
 
     private final ChairMapper chairMapper;
 
@@ -36,21 +40,31 @@ public class ChairServiceImpl implements ChairService {
         try {
             Chair chair = chairMapper.toEntity(newChair);
 
-            // Get the category ID correspanding to the current Category name
+            // Get the category ID correspanding to the current category name
             Long ctgID = categoryRepository.findCategoryByName(newChair.getCategoty());
             if (ctgID == null) {
                 throw new CategoryNameNotFoundException(newChair.getCategoty() + "Catgeory Not found");
             }
 
-            // push the image to amazon s3 and get the image_url
+            // verify if images field is null
+            if (newChair.getImages() == null) {
+                throw new ImageFieldNullException("Image field is null");
+            }
+
+            // push each image to amazon s3 and get the image_url
             for (MultipartFile image : newChair.getImages()) {
                 String fileUrl = storageService.uploadFile(image);
+                Image img = new Image();
+                img.setName(newChair.getName());
+                img.setImage_url(fileUrl);
+                imageRepository.save(img);
             }
 
             chair.setCtg_id(ctgID);
 
             chairRepository.save(chair);
-        } catch (UploadFileException | FileConvertingException | CategoryNameNotFoundException e) {
+        } catch (UploadFileException | FileConvertingException | CategoryNameNotFoundException
+                | ImageFieldNullException e) {
             throw new FailedAddingChairException("Adding Chair operation failed : " +
                     e.getMessage());
         }
@@ -70,7 +84,7 @@ public class ChairServiceImpl implements ChairService {
 
     @Override
     public List<Chair> getAllChairs() {
-        // TODO Auto-generated method stub
+
         throw new UnsupportedOperationException("Unimplemented method 'getAllChairs'");
     }
 

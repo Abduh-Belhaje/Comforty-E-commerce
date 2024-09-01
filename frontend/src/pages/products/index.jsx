@@ -1,3 +1,4 @@
+import ChairPagination from "./components/ChairPagination";
 import Filter from "./components/Filter";
 import ListOfProduct from "./components/ListOfProduct";
 
@@ -9,6 +10,7 @@ function Products() {
 
       {/* product list */}
       <ListOfProduct />
+      <ChairPagination />
     </div>
   );
 }

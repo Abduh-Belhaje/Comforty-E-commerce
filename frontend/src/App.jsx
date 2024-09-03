@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import Header from "./components/custom/Header";
 import AlertDialogComponent from "./components/custom/AlertDialogComponent";
 import Footer from "./components/custom/Footer";
+import { ProductProvider } from "./contexte/ProductContext";
 
 function App() {
   const [showAlert, setShowAlert] = useState(false);
@@ -20,14 +21,16 @@ function App() {
 
   return (
     <>
-      <Header />
-      <Outlet />
-      <AlertDialogComponent
-        open={showAlert}
-        onClose={() => setShowAlert(false)}
-        pathname={pathname} // Pass pathname as a prop
-      />
-      <Footer />
+      <ProductProvider>
+        <Header />
+        <Outlet />
+        <AlertDialogComponent
+          open={showAlert}
+          onClose={() => setShowAlert(false)}
+          pathname={pathname} // Pass pathname as a prop
+        />
+        <Footer />
+      </ProductProvider>
     </>
   );
 }

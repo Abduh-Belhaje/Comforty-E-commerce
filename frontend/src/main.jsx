@@ -13,6 +13,8 @@ import { UserProvider } from "./contexte/UserContext.jsx";
 import { Toaster } from "@/components/ui/sonner";
 import Products from "./pages/products/index.jsx";
 import UserProfile from "./auth/user-profile/[user-profile]/index.jsx";
+import Product from "./pages/products/product/[productId]/index.jsx";
+import ProductPage from "./pages/products/product/[productId]/index.jsx";
 
 const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 if (!PUBLISHABLE_KEY) {
@@ -30,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: "/products",
         element: <Products />,
+      },
+      {
+        path: "/products/:id",
+        element: <ProductPage />,
       },
     ],
   },

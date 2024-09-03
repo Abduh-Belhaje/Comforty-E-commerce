@@ -1,20 +1,26 @@
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-
-import { Fragment } from "react";
-import { HeartIcon, StarIcon } from "@heroicons/react/20/solid";
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
+import { Fragment, useState } from "react";
+import { StarIcon } from "@heroicons/react/20/solid";
+import {
+  Dialog,
+  Tab,
+  TabGroup,
+  TabList,
+  TabPanel,
+  TabPanels,
+  Transition,
+} from "@headlessui/react";
+import { Rating } from "@mui/material";
 
 const product = {
-  name: "Application UI Icon Pack",
-  version: { name: "1.0", date: "June 5, 2021", datetime: "2021-06-05" },
-  price: "$220",
+  name: "Ergonomic Office Chair",
+  version: { name: "Classic", date: "August 22, 2024", datetime: "2024-08-22" },
+  price: "$299",
   description:
-    "The Application UI Icon Pack comes with over 200 icons in 3 styles: outline, filled, and branded. This playful icon pack is tailored for complex application user interfaces with a friendly and legible look.",
+    "Experience superior comfort with our Ergonomic Office Chair, designed for all-day support. Perfect for home offices and professional settings.",
   highlights: [
-    "200+ SVG icons in 3 unique styles",
-    "Compatible with Figma, Sketch, and Adobe XD",
-    "Drawn on 24 x 24 pixel grid",
+    "Adjustable lumbar support",
+    "Breathable mesh back",
+    "360-degree swivel base",
   ],
   imageSrc:
     "https://tailwindui.com/img/ecommerce-images/product-page-05-product-01.jpg",
@@ -99,6 +105,16 @@ function classNames(...classes) {
 }
 
 export default function ProductPage() {
+  const [isReviewOpen, setIsReviewOpen] = useState(false);
+  const [reviewText, setReviewText] = useState("");
+  const [reviewRating, setReviewRating] = useState(0);
+  const openReviewModal = () => setIsReviewOpen(true);
+  const closeReviewModal = () => setIsReviewOpen(false);
+  const submitReview = () => {
+    // Handle review submission here (e.g., save to the server)
+    console.log("Review submitted:", reviewText, reviewRating);
+    closeReviewModal();
+  };
   return (
     <div className="bg-white">
       <div className="mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
@@ -154,7 +170,9 @@ export default function ProductPage() {
                 <p className="sr-only">{reviews.average} out of 5 stars</p>
               </div>
             </div>
+
             <p className="mt-6 text-gray-500">{product.description}</p>
+
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
               <button
                 type="button"
@@ -166,10 +184,10 @@ export default function ProductPage() {
                 type="button"
                 className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-50 px-8 py-3 text-base font-medium text-indigo-700 hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
               >
-                <HeartIcon className="w-8" />
-                <span className="ml-2"> Save it</span>
+                Watchlist
               </button>
             </div>
+
             <div className="mt-10 border-t border-gray-200 pt-10">
               <h3 className="text-sm font-medium text-gray-900">Highlights</h3>
               <div className="prose prose-sm mt-4 text-gray-500">
@@ -180,7 +198,20 @@ export default function ProductPage() {
                 </ul>
               </div>
             </div>
-            *
+
+            <div className="mt-10 border-t border-gray-200 pt-10">
+              <h3 className="text-sm font-medium text-gray-900">License</h3>
+              <p className="mt-4 text-sm text-gray-500">
+                {license.summary}{" "}
+                <a
+                  href={license.href}
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                >
+                  Read full license
+                </a>
+              </p>
+            </div>
+
             <div className="mt-10 border-t border-gray-200 pt-10">
               <h3 className="text-sm font-medium text-gray-900">Share</h3>
               <ul role="list" className="mt-4 flex items-center space-x-6">
@@ -289,13 +320,68 @@ export default function ProductPage() {
               <TabPanels as={Fragment}>
                 <TabPanel className="-mb-10">
                   <h3 className="sr-only">Customer Reviews</h3>
-                  <div className="flex items-center mt-2">
-                    <Input
-                      className="mr-1"
-                      placeholder="share with us you experinece"
-                    />
-                    <Button variant="outline">Share</Button>
-                  </div>
+
+                  <Transition show={isReviewOpen} as={Fragment}>
+                    <Dialog
+                      as="div"
+                      open={isReviewOpen}
+                      onClose={closeReviewModal}
+                    >
+                      <div
+                        className="fixed inset-0 bg-black/30"
+                        aria-hidden="true"
+                      />
+                      <div className="fixed inset-0 flex items-center justify-center p-4">
+                        <Dialog.Panel className="mx-auto max-w-lg rounded bg-white p-6 shadow-lg">
+                          <Dialog.Title className="text-lg font-semibold text-gray-900">
+                            Write a Review
+                          </Dialog.Title>
+                          <div className="mt-4">
+                            <Rating
+                              name="review-rating"
+                              value={reviewRating}
+                              onChange={(event, newValue) =>
+                                setReviewRating(newValue)
+                              }
+                              precision={0.5}
+                              size="large"
+                              className="text-yellow-400"
+                            />
+                            <textarea
+                              value={reviewText}
+                              onChange={(e) => setReviewText(e.target.value)}
+                              rows="4"
+                              className="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              placeholder="Write your review here..."
+                            />
+                          </div>
+                          <div className="mt-4 flex gap-4">
+                            <button
+                              type="button"
+                              onClick={submitReview}
+                              className="inline-flex justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-base font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                            >
+                              Submit
+                            </button>
+                            <button
+                              type="button"
+                              onClick={closeReviewModal}
+                              className="inline-flex justify-center rounded-md border border-transparent bg-gray-200 px-4 py-2 text-base font-medium text-gray-900 shadow-sm hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"
+                            >
+                              Cancel
+                            </button>
+                          </div>
+                        </Dialog.Panel>
+                      </div>
+                    </Dialog>
+                  </Transition>
+
+                  <button
+                    onClick={openReviewModal}
+                    className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-md"
+                  >
+                    Leave a Review
+                  </button>
 
                   {reviews.featured.map((review, reviewIdx) => (
                     <div

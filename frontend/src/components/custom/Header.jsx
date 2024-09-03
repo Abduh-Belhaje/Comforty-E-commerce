@@ -22,6 +22,7 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from "@headlessui/react";
+import { useProductContext } from "../../contexte/ProductContext";
 
 const services = [
   {
@@ -59,9 +60,11 @@ const services = [
 function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [watchlistOpen, setWatchlistOpen] = useState(false);
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
+  const { watchlist, removeFromWatchlist } = useProductContext();
 
   return (
     <header className="bg-white shadow-sm">
@@ -164,13 +167,18 @@ function Header() {
             <ShoppingCartIcon className="w-5 h-5" />
             <span className="ml-1 text-sm">0</span>
           </Button>
-          <Link
-            to="#"
-            className="flex items-center space-x-1 text-gray-900 hover:text-red-600 border-r pr-2"
+          <button
+            onClick={() => setWatchlistOpen(true)} // Open the sidebar on click
+            className="relative flex items-center space-x-1 text-gray-900 hover:text-red-600 border-r pr-2"
           >
             <HeartIcon className="w-5 h-5" />
-            <span className="ml-1 text-sm">0</span>
-          </Link>
+            <span className=" text-sm"></span>
+            {watchlist.length > 0 && (
+              <span className="absolute top-0 bottom-1.5 left-2 inline-flex items-center justify-center px-1 py-0.5 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+                {watchlist.length}
+              </span>
+            )}
+          </button>
           <Link
             to="/profile"
             className="flex items-center space-x-1 text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600"
@@ -180,14 +188,75 @@ function Header() {
         </div>
       </nav>
 
-      {/* Mobile Menu */}
+      {/* Watchlist Sidebar */}
+      {watchlistOpen && (
+        <div className="fixed inset-0 z-40 flex">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-25"
+            aria-hidden="true"
+            onClick={() => setWatchlistOpen(false)}
+          ></div>
+          <div className="relative z-50 flex w-full max-w-xs flex-col overflow-y-auto bg-white shadow-xl">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h2 className="text-lg font-semibold">Watchlist</h2>
+              <button
+                type="button"
+                onClick={() => setWatchlistOpen(false)}
+                className="rounded-md p-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+              >
+                <XMarkIcon className="w-6 h-6" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="flex-1 p-4">
+              {watchlist.length > 0 ? (
+                <ul className="space-y-4">
+                  {watchlist.map((item) => (
+                    <li
+                      key={item.id}
+                      className="flex items-center justify-between"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <img
+                          src={item.imageSrc}
+                          alt={item.name}
+                          className="w-10 h-10 object-cover rounded"
+                        />
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">
+                            {item.name}
+                          </p>
+                          <p className="text-sm text-gray-500">{item.price}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => removeFromWatchlist(item.id)}
+                        className="text-sm font-medium text-red-600 hover:text-red-800"
+                      >
+                        Remove
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="text-sm text-gray-500">
+                  Your watchlist is empty.
+                </p>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
       <Dialog
+        as="div"
         open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
+        onClose={setMobileMenuOpen}
         className="lg:hidden"
       >
-        <div className="fixed inset-0 z-10 bg-black bg-opacity-25" />
-        <Dialog.Panel className="fixed inset-y-0 right-0 z-20 w-full max-w-sm bg-white p-6 sm:ring-1 sm:ring-gray-900/10">
+        <Dialog.Panel
+          focus="true"
+          className="fixed inset-0 z-50 overflow-y-auto bg-white px-6 py-6 lg:hidden"
+        >
           <div className="flex items-center justify-between">
             <Link to="/" className="-m-1.5 p-1.5">
               <span className="sr-only">Your Company</span>
@@ -198,7 +267,6 @@ function Header() {
                 loading="lazy"
               />
             </Link>
-
             <button
               type="button"
               onClick={() => setMobileMenuOpen(false)}
@@ -208,74 +276,57 @@ function Header() {
               <XMarkIcon aria-hidden="true" className="h-6 w-6" />
             </button>
           </div>
-          <div className="mt-6">
-            <div className="space-y-6">
-              <Disclosure as="div">
-                <DisclosureButton className="flex items-center justify-between w-full text-sm font-semibold leading-6 text-gray-900">
-                  Services
-                  <ChevronUpDownIcon
-                    aria-hidden="true"
-                    className="h-5 w-5 flex-none"
-                  />
-                </DisclosureButton>
-                <DisclosurePanel className="mt-2 space-y-2">
-                  {services.map((item) => (
-                    <Link
-                      key={item.name}
-                      to={item.to}
-                      className="block rounded-lg py-2 pl-6 pr-3 text-sm font-semibold leading-7 text-gray-900 hover:bg-gray-50"
-                    >
-                      {item.name}
-                    </Link>
-                  ))}
-                </DisclosurePanel>
-              </Disclosure>
-              <Link
-                to="/products"
-                className={`block text-sm font-semibold leading-6 ${
-                  isActive("/products") ? "text-indigo-600" : "text-gray-900"
-                }`}
-              >
-                Products
-              </Link>
-
-              <Link
-                to="/about"
-                className={`block text-sm font-semibold leading-6 ${
-                  isActive("/about") ? "text-indigo-600" : "text-gray-900"
-                }`}
-              >
-                About
-              </Link>
-              <Link
-                to="/contact"
-                className={`block text-sm font-semibold leading-6 ${
-                  isActive("/contact") ? "text-indigo-600" : "text-gray-900"
-                }`}
-              >
-                Contact
-              </Link>
-              {/* Watchlist and Cart */}
-              <Link
-                to="#"
-                className="block flex items-center text-sm font-semibold leading-6 text-gray-900 hover:text-red-600"
-              >
-                <HeartIcon className="w-5 h-5 mr-2" />
-                Watchlist
-              </Link>
-              <Link
-                to="#"
-                className="block flex items-center text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600"
-              >
-                <ShoppingCartIcon className="w-5 h-5 mr-2" />
-                Add to Cart
-              </Link>
-              <Link
-                to="/signin"
-                className="block text-sm font-semibold leading-6 text-gray-900"
-              >
-                Sign in
-              </Link>
+          <div className="mt-6 flow-root">
+            <div className="-my-6 divide-y divide-gray-500/10">
+              <div className="space-y-2 py-6">
+                <Link
+                  to="/products"
+                  className={`block text-sm font-semibold leading-6 ${
+                    isActive("/products") ? "text-indigo-600" : "text-gray-900"
+                  }`}
+                >
+                  Products
+                </Link>
+                <Link
+                  to="/about"
+                  className={`block text-sm font-semibold leading-6 ${
+                    isActive("/about") ? "text-indigo-600" : "text-gray-900"
+                  }`}
+                >
+                  About
+                </Link>
+                <Link
+                  to="/contact"
+                  className={`block text-sm font-semibold leading-6 ${
+                    isActive("/contact") ? "text-indigo-600" : "text-gray-900"
+                  }`}
+                >
+                  Contact
+                </Link>
+              </div>
+              <div className="mt-6 space-y-6">
+                <Button
+                  variant="none"
+                  className="w-full flex items-center justify-between text-gray-900 hover:text-indigo-600"
+                >
+                  <span>Cart</span>
+                  <span>0</span>
+                </Button>
+                <Button
+                  variant="none"
+                  onClick={() => setWatchlistOpen(true)} // Open the sidebar on click
+                  className="w-full flex items-center justify-between text-gray-900 hover:text-red-600"
+                >
+                  <span>Watchlist</span>
+                  <span>{watchlist.length}</span>
+                </Button>
+                <Link
+                  to="/profile"
+                  className="w-full flex items-center justify-between text-sm font-semibold leading-6 text-gray-900 hover:text-indigo-600"
+                >
+                  Profile
+                </Link>
+              </div>
             </div>
           </div>
         </Dialog.Panel>

@@ -1,5 +1,6 @@
-import Filter from "./components/filter";
-import ListOfProduct from "./components/listOfProduct";
+import ChairPagination from "./components/ChairPagination";
+import Filter from "./components/Filter";
+import ListOfProduct from "./components/ListOfProduct";
 
 function Products() {
   return (
@@ -9,6 +10,7 @@ function Products() {
 
       {/* product list */}
       <ListOfProduct />
+      <ChairPagination />
     </div>
   );
 }

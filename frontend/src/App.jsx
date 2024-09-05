@@ -15,7 +15,7 @@ function App() {
     if (storedPath) {
       setPathname(storedPath);
       setShowAlert(true);
-      sessionStorage.removeItem("previousPath"); // Optionally remove path after use
+      sessionStorage.removeItem("previousPath");
     }
   }, []);
 

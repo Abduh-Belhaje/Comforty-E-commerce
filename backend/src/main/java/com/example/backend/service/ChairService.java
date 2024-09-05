@@ -3,8 +3,9 @@ package com.example.backend.service;
 import java.util.List;
 
 import com.example.backend.dto.chair.AddChairDTO;
+import com.example.backend.dto.chair.ChairDTO;
+import com.example.backend.dto.chair.ChairInfoDTO;
 import com.example.backend.exception.FailedAddingChairException;
-import com.example.backend.model.Chair;
 
 public interface ChairService {
 
@@ -14,10 +15,12 @@ public interface ChairService {
 
     void deleteChair(int chairID);
 
-    List<Chair> getAllChairs();
+    List<ChairDTO> getAllChairs(int offset, int size);
 
-    List<Chair> recentlyAdded();
+    List<ChairDTO> recentlyAdded();
 
-    Chair getChair(Long chairID);
+    List<ChairDTO> getChairsByCategory(String category);
+
+    ChairInfoDTO getChair(String name);
 
 }

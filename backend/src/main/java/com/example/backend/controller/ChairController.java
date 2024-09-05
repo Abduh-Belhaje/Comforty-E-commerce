@@ -2,11 +2,11 @@ package com.example.backend.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend.dto.chair.AddChairDTO;
 import com.example.backend.exception.FailedAddingChairException;
@@ -38,9 +38,56 @@ public class ChairController {
         }
     }
 
-    @PostMapping("/test")
-    public void test(@RequestParam("testfile") MultipartFile request) {
-
-        System.out.println(request);
+    @Operation(summary = "Get All chairs", responses = {
+            @ApiResponse(responseCode = "200", description = "Successfull Operation"),
+            @ApiResponse(responseCode = "401", description = "Operation failed")
+    })
+    @GetMapping("/chairs/{offset}/{size}")
+    public ResponseEntity<?> getAllChairs(@PathVariable int offset, @PathVariable int size) {
+        try {
+            return ResponseEntity.ok(chairService.getAllChairs(offset, size));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
+
+    @Operation(summary = "Get the 4 Recent chairs", responses = {
+            @ApiResponse(responseCode = "200", description = "Successfull Operation"),
+            @ApiResponse(responseCode = "401", description = "Operation failed")
+    })
+    @GetMapping("/recent")
+    public ResponseEntity<?> getRecentChairs() {
+        try {
+            return ResponseEntity.ok(chairService.recentlyAdded());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Get chair Details", responses = {
+            @ApiResponse(responseCode = "200", description = "Successfull Operation"),
+            @ApiResponse(responseCode = "401", description = "Operation failed")
+    })
+    @GetMapping("/{name}")
+    public ResponseEntity<?> getRecentChairs(@PathVariable String name) {
+        try {
+            return ResponseEntity.ok(chairService.getChair(name));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Get chair by Category", responses = {
+            @ApiResponse(responseCode = "200", description = "Successfull Operation"),
+            @ApiResponse(responseCode = "401", description = "Operation failed")
+    })
+    @GetMapping("/ctg/{category}")
+    public ResponseEntity<?> getChairsByCategory(@PathVariable String category) {
+        try {
+            return ResponseEntity.ok(chairService.getChairsByCategory(category));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }

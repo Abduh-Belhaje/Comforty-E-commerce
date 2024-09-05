@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.backend.dto.auth.JwtResponse;
 import com.example.backend.dto.auth.SignInRequest;
-import com.example.backend.dto.auth.SignupRequest;
+import com.example.backend.dto.auth.SignUpRequest;
 
 import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.EmailNotFoundException;
@@ -36,7 +36,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public JwtResponse Signup(SignupRequest request) throws EmailAlreadyExistsException {
+    public JwtResponse Signup(SignUpRequest request) throws EmailAlreadyExistsException {
         boolean exist = userRepository.existsByEmail(request.getU_email());
 
         if (!exist) {

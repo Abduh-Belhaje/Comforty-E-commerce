@@ -10,7 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.example.backend.dto.auth.JwtResponse;
 import com.example.backend.dto.auth.SignInRequest;
-import com.example.backend.dto.auth.SignupRequest;
+import com.example.backend.dto.auth.SignUpRequest;
 import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.EmailNotFoundException;
 import com.example.backend.model.Role;
@@ -80,7 +80,7 @@ class AuthServiceTest {
         @Test
         void signupForNewUser() throws EmailAlreadyExistsException {
 
-                SignupRequest request = new SignupRequest("abdo", "belhaje", "abdo@gmail.com");
+                SignUpRequest request = new SignUpRequest("abdo", "belhaje", "abdo@gmail.com");
 
                 when(userRepository.existsByEmail(request.getU_email()))
                                 .thenReturn(false);
@@ -95,7 +95,7 @@ class AuthServiceTest {
 
         @Test
         void signupForExistingUser() {
-                SignupRequest request = new SignupRequest("abdo", "belhaje", "abdo@gmail.com");
+                SignUpRequest request = new SignUpRequest("abdo", "belhaje", "abdo@gmail.com");
 
                 when(userRepository.existsByEmail(request.getU_email()))
                                 .thenReturn(true);

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.backend.dto.auth.SignInRequest;
-import com.example.backend.dto.auth.SignupRequest;
+import com.example.backend.dto.auth.SignUpRequest;
 
 import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.EmailNotFoundException;
@@ -44,7 +44,7 @@ public class AuthController {
             @ApiResponse(responseCode = "400", description = "Email already exists")
     })
     @PostMapping("/signup")
-    public ResponseEntity<?> signUp(@RequestBody SignupRequest request) {
+    public ResponseEntity<?> signUp(@RequestBody SignUpRequest request) {
 
         try {
             return ResponseEntity.ok(authService.Signup(request));

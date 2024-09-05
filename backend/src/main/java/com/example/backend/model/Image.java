@@ -28,4 +28,9 @@ public class Image {
 
     @Column(nullable = false)
     private String image_url;
+
+    public Image(String name, String image_url) {
+        this.name = name;
+        this.image_url = image_url;
+    }
 }

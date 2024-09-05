@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.backend.dto.chair.AddChairDTO;
+import com.example.backend.dto.chair.ChairDTO;
+import com.example.backend.dto.chair.ChairInfoDTO;
 import com.example.backend.exception.CategoryNameNotFoundException;
 import com.example.backend.exception.FailedAddingChairException;
 import com.example.backend.exception.FileConvertingException;
@@ -41,9 +43,9 @@ public class ChairServiceImpl implements ChairService {
             Chair chair = chairMapper.toEntity(newChair);
 
             // Get the category ID correspanding to the current category name
-            Long ctgID = categoryRepository.findCategoryByName(newChair.getCategoty());
+            Long ctgID = categoryRepository.findCategoryByName(newChair.getCategory());
             if (ctgID == null) {
-                throw new CategoryNameNotFoundException(newChair.getCategoty() + "Catgeory Not found");
+                throw new CategoryNameNotFoundException(newChair.getCategory() + "Catgeory Not found");
             }
 
             // verify if images field is null
@@ -83,21 +85,23 @@ public class ChairServiceImpl implements ChairService {
     }
 
     @Override
-    public List<Chair> getAllChairs() {
-
-        throw new UnsupportedOperationException("Unimplemented method 'getAllChairs'");
+    public List<ChairDTO> getAllChairs(int offset, int size) {
+        return chairMapper.toDto(chairRepository.getAllChairs(offset, size));
     }
 
     @Override
-    public List<Chair> recentlyAdded() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'recentlyAdded'");
+    public List<ChairDTO> recentlyAdded() {
+        return chairMapper.toDto(chairRepository.getRecentChairs());
     }
 
     @Override
-    public Chair getChair(Long chairID) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getChair'");
+    public ChairInfoDTO getChair(String name) {
+        return chairMapper.toChairInfoDTO(chairRepository.getChairInfo(name));
+    }
+
+    @Override
+    public List<ChairDTO> getChairsByCategory(String category) {
+        return chairMapper.toDto(chairRepository.filterChairsByCategory(category));
     }
 
 }

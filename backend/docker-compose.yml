@@ -24,10 +24,6 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/comfortyDB
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=admin
-      - AWS_BUCKET_NAME=
-      - AWS_ACCESS_KEY=
-      - AWS_SECRET_KEY=
-      - AWS_REGION=
     container_name: comforty-backend
     depends_on:
       - postgres-db

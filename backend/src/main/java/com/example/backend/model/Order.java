@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Order", schema = "orders")
+@Table(name = "Orders", schema = "orders")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -23,7 +23,7 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "order_seq")
     @SequenceGenerator(name = "order_seq", sequenceName = "orders.order_seq", allocationSize = 1)
-    private int order_id;
+    private Long order_id;
 
     private int user_id;
 

@@ -26,7 +26,7 @@ public class User_profile {
     private Long profile_id;
 
     @Column(nullable = false)
-    private int user_id;
+    private Long user_id;
 
     private String picture_url;
 

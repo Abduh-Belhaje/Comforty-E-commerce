@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.example.backend.model.Role;
-import com.example.backend.model.Users;
+import com.example.backend.model.User;
 import com.example.backend.service.impl.JwtServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,7 +29,7 @@ public class JwtServiceTest {
     @Test
     void CheckTokenGeneration() {
 
-        UserDetails userDetails = new Users("abdo", "belhaj", "abdo@gmail.com", Role.CUSTOMER,
+        UserDetails userDetails = new User("abdo", "belhaj", "abdo@gmail.com", Role.CUSTOMER,
                 new Timestamp(System.currentTimeMillis()));
 
         String jwt = jwtService.generateToken(userDetails);
@@ -41,7 +41,7 @@ public class JwtServiceTest {
     public void testExtractUserName_Success() {
 
         // Generate token
-        UserDetails userDetails = new Users("abdo", "belhaj", "abdo@gmail.com", Role.CUSTOMER,
+        UserDetails userDetails = new User("abdo", "belhaj", "abdo@gmail.com", Role.CUSTOMER,
                 new Timestamp(System.currentTimeMillis()));
 
         String jwt = jwtService.generateToken(userDetails);
@@ -56,7 +56,7 @@ public class JwtServiceTest {
     @Test
     public void testIsTokenValid_ValidToken() {
         // Generate token
-        UserDetails userDetails = new Users("abdo", "belhaj", "abdo@gmail.com", Role.CUSTOMER,
+        UserDetails userDetails = new User("abdo", "belhaj", "abdo@gmail.com", Role.CUSTOMER,
                 new Timestamp(System.currentTimeMillis()));
 
         String jwt = jwtService.generateToken(userDetails);
@@ -69,10 +69,10 @@ public class JwtServiceTest {
     @Test
     public void testIsTokenValid_InValidToken() {
 
-        UserDetails userDetails = new Users("abdo", "belhaj", "abdo@gmail.com", Role.CUSTOMER,
+        UserDetails userDetails = new User("abdo", "belhaj", "abdo@gmail.com", Role.CUSTOMER,
                 new Timestamp(System.currentTimeMillis()));
 
-        UserDetails userDetails2 = new Users("Ali", "sma9lo", "Ali@gmail.com", Role.CUSTOMER,
+        UserDetails userDetails2 = new User("Ali", "sma9lo", "Ali@gmail.com", Role.CUSTOMER,
                 new Timestamp(System.currentTimeMillis()));
 
         // generate the token with the first variable

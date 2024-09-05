@@ -19,10 +19,10 @@ public class ShoppingCart {
 
     @Id
     @Column(nullable = false)
-    private int user_id;
+    private Long user_id;
 
     @Column(nullable = false)
-    private int chair_id;
+    private Long chair_id;
 
     @Column(nullable = false)
     private int quantity;

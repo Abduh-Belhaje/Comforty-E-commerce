@@ -11,12 +11,13 @@ services:
       POSTGRES_DB: comfortyDB
     container_name: postgres-db
     volumes:
-      - ./src/main/resources/:/docker-entrypoint-initdb.d/
+      - ./db/:/docker-entrypoint-initdb.d/
+      - ./postgres-data:/var/lib/postgresql/data
     networks:
       - mynetwork
-
+  
   comforty:
-    image: abdo001/comforty:v1
+    image: abdo001/comforty:v2
     ports:
       - "8080:8080"
     environment:

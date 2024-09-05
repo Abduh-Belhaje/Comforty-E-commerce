@@ -23,7 +23,7 @@ public class OrderDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "orderDetails_seq")
     @SequenceGenerator(name = "orderDetails_seq", sequenceName = "orders.orderDetails_seq", allocationSize = 1)
-    private int orderItem_id;
+    private Long orderItem_id;
 
     @Column(nullable = false)
     private int order_id;

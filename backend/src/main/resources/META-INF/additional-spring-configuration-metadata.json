@@ -1,0 +1,27 @@
+{"properties": [
+  {
+    "name": "cloud.aws.credentials.access-key",
+    "type": "java.lang.String",
+    "description": "A description for 'cloud.aws.credentials.access-key'"
+  },
+  {
+    "name": "cloud.aws.credentials.secret-key",
+    "type": "java.lang.String",
+    "description": "A description for 'cloud.aws.credentials.secret-key'"
+  },
+  {
+    "name": "cloud.aws.region.static",
+    "type": "java.lang.String",
+    "description": "A description for 'cloud.aws.region.static'"
+  },
+  {
+    "name": "application.bucket.name",
+    "type": "java.lang.String",
+    "description": "A description for 'application.bucket.name'"
+  },
+  {
+    "name": "cloud.aws.stack.auto",
+    "type": "java.lang.String",
+    "description": "A description for 'cloud.aws.stack.auto'"
+  }
+]}

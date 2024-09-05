@@ -18,8 +18,8 @@ public class AddChairDTO {
     @JsonProperty("name")
     private String name;
 
-    @JsonProperty("categoty")
-    private String categoty;
+    @JsonProperty("category")
+    private String category;
 
     @JsonProperty("images")
     private List<MultipartFile> images;
@@ -35,5 +35,8 @@ public class AddChairDTO {
 
     @JsonProperty("weight")
     private String weight;
+
+    @JsonProperty("discount")
+    private String discount;
 
 }

@@ -1,12 +1,12 @@
 
 -- creating the Database schemas 
 
-DROP SCHEMA public;
+DROP SCHEMA IF EXISTS public;
 
-CREATE SCHEMA accounts;
+CREATE SCHEMA IF NOT EXISTS accounts;
 
-CREATE SCHEMA orders;
+CREATE SCHEMA IF NOT EXISTS orders;
 
-CREATE SCHEMA catalog;
+CREATE SCHEMA IF NOT EXISTS catalog;
 
 SET search_path TO accounts , orders , catalog ;

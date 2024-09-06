@@ -217,7 +217,7 @@ function Header() {
                     >
                       <div className="flex items-center space-x-3">
                         <img
-                          src={item.imageSrc}
+                          src={item.image_url}
                           alt={item.name}
                           className="w-10 h-10 object-cover rounded"
                         />

@@ -71,4 +71,10 @@ public class ChairRepositoryTest {
         assertThat(result.get(1)[7]).isEqualTo("img2_1.url");
     }
 
+    @Test
+    void shouldReturnNbOfChairs() {
+        Long nb = underTest.nbOfChairs();
+        assertThat(nb).isEqualTo(2);
+    }
+
 }

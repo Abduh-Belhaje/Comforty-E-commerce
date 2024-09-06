@@ -23,4 +23,8 @@ public interface ChairService {
 
     ChairInfoDTO getChair(String name);
 
+    List<String> getCategoriesName();
+
+    Long nbOfChairs();
+
 }

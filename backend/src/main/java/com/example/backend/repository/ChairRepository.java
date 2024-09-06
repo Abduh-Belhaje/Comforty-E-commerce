@@ -30,4 +30,7 @@ public interface ChairRepository extends JpaRepository<Chair, Long> {
     @Query(value = "SELECT * FROM catalog.get_chairs_by_category(:category)", nativeQuery = true)
     List<Object[]> filterChairsByCategory(@Param("category") String category);
 
+    @Query("SELECT COUNT(*) FROM Chair")
+    Long nbOfChairs();
+
 }

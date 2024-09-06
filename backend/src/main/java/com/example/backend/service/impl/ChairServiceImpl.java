@@ -104,4 +104,14 @@ public class ChairServiceImpl implements ChairService {
         return chairMapper.toDto(chairRepository.filterChairsByCategory(category));
     }
 
+    @Override
+    public List<String> getCategoriesName() {
+        return categoryRepository.getAllGategories();
+    }
+
+    @Override
+    public Long nbOfChairs() {
+        return chairRepository.nbOfChairs();
+    }
+
 }

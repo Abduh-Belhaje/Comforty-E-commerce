@@ -90,4 +90,30 @@ public class ChairController {
         }
     }
 
+    @Operation(summary = "Get categories name", responses = {
+            @ApiResponse(responseCode = "200", description = "Successfull Operation"),
+            @ApiResponse(responseCode = "401", description = "Operation failed")
+    })
+    @GetMapping("/categories")
+    public ResponseEntity<?> getCategoriesName() {
+        try {
+            return ResponseEntity.ok(chairService.getCategoriesName());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
+    @Operation(summary = "Get number of chairs", responses = {
+            @ApiResponse(responseCode = "200", description = "Successfull Operation"),
+            @ApiResponse(responseCode = "401", description = "Operation failed")
+    })
+    @GetMapping("/nbOfChairs")
+    public ResponseEntity<?> getNbChairs() {
+        try {
+            return ResponseEntity.ok(chairService.nbOfChairs());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+
 }

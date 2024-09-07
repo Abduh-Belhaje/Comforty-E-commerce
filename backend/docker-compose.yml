@@ -16,19 +16,19 @@ services:
     networks:
       - mynetwork
   
-  comforty:
-    image: abdo001/comforty:v2
-    ports:
-      - "8080:8080"
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/comfortyDB
-      - SPRING_DATASOURCE_USERNAME=postgres
-      - SPRING_DATASOURCE_PASSWORD=admin
-    container_name: comforty-backend
-    depends_on:
-      - postgres-db
-    networks:
-      - mynetwork
+  # comforty:
+  #   image: abdo001/comforty:v2
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-db:5432/comfortyDB
+  #     - SPRING_DATASOURCE_USERNAME=postgres
+  #     - SPRING_DATASOURCE_PASSWORD=admin
+  #   container_name: comforty-backend
+  #   depends_on:
+  #     - postgres-db
+  #   networks:
+  #     - mynetwork
 
 networks:
   mynetwork:

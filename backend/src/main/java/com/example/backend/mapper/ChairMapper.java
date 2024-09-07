@@ -1,5 +1,6 @@
 package com.example.backend.mapper;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,6 +37,9 @@ public interface ChairMapper {
         String height = (String) firstObj[4];
         String weight = (String) firstObj[5];
         String discount = (String) firstObj[6];
+        int price = (int) firstObj[8];
+        String width = (String) firstObj[9];
+        BigDecimal rate = (BigDecimal) firstObj[10];
 
         List<String> images = new ArrayList<>();
 
@@ -43,7 +47,7 @@ public interface ChairMapper {
             images.add((String) object[7]);
         }
 
-        return new ChairInfoDTO(name, description, status, color, height, weight, discount, images);
+        return new ChairInfoDTO(name, description, status, color, height, weight, discount, images, price, width, rate);
     }
 
     // Method to map a list of Object[] to a list of ChairDTOs

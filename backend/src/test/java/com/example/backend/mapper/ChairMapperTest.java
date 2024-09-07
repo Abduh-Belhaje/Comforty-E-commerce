@@ -22,7 +22,7 @@ public class ChairMapperTest {
     @Test
     void mapFromChairDtoToChair() {
 
-        AddChairDTO chairDTO = new AddChairDTO("xx", "xx", null, "ooo", "red", "10", "10", "0");
+        AddChairDTO chairDTO = new AddChairDTO("xx", "xx", null, "ooo", "red", "10", "10", "0", null, null);
 
         Chair chair = chairMapper.toEntity(chairDTO);
 
@@ -71,8 +71,10 @@ public class ChairMapperTest {
 
     @Test
     void mapFromObjectsToChairInfoDTO() {
-        Object[] obj1 = { "Chair1", "A comfortable chair", "NEW", "Red", "110cm", "15kg", "10%", "img1_1.url" };
-        Object[] obj2 = { "Chair1", "A comfortable chair", "NEW", "Red", "110cm", "15kg", "10%", "img1_2.url" };
+        Object[] obj1 = { "Chair1", "A comfortable chair", "NEW", "Red", "110cm", "15kg", "10%", "img1_1.url", 100,
+                "40cm", 5 };
+        Object[] obj2 = { "Chair1", "A comfortable chair", "NEW", "Red", "110cm", "15kg", "10%", "img1_2.url", 100,
+                "40cm", 5 };
 
         List<Object[]> data = Arrays.asList(obj1, obj2);
         ChairInfoDTO chair = chairMapper.toChairInfoDTO(data);

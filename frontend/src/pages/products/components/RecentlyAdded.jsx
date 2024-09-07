@@ -1,18 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { useProductContext } from "../../../contexte/ProductContext";
 import { HeartIcon, ShoppingBagIcon } from "@heroicons/react/24/outline";
 import { Button } from "@/components/ui/button"; // Adjust the import path as necessary
-import { useProductContext } from "../../../contexte/ProductContext"; // Adjust the import path as necessary
 
-export default function ListOfProduct() {
-  const {
-    watchlist,
-    addToWatchlist,
-    removeFromWatchlist,
-    getChairsByCategory,
-    chairs,
-    selectedCategory,
-  } = useProductContext(); // Ensure chairs is available in context
+function RecentlyAdded() {
+  const { recentProducts, watchlist, addToWatchlist, removeFromWatchlist } =
+    useProductContext();
   const [bag, setBag] = useState([]);
 
   // Add a product to the bag
@@ -20,10 +14,6 @@ export default function ListOfProduct() {
     setBag((prev) => [...prev, product]);
   };
 
-  useEffect(() => {
-    if (selectedCategory) {
-    }
-  }, []);
   // Check if a product is in the watchlist
   const isInWatchlist = (productName) => {
     return watchlist.some((product) => product.name === productName);
@@ -41,18 +31,20 @@ export default function ListOfProduct() {
   return (
     <div className="bg-white">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">Chairs</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-6">
+          Recently Added
+        </h2>
         <div className="grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-x-8">
-          {chairs.map((product) => (
+          {recentProducts.map((product) => (
             <div
-              key={product.name} // Use product.name as the key
+              key={product.name} // Using product.name as key
               className="group relative bg-white border rounded-lg shadow-sm overflow-hidden"
             >
               <Link to={`/products/${product.name}`} className="block">
                 <div className="relative">
                   <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-lg">
                     <img
-                      src={product.image_url} // Ensure image_url is correct
+                      src={product.image_url} // Corrected image_url reference
                       alt={product.name}
                       className="h-full w-full object-cover object-center group-hover:opacity-75"
                     />
@@ -121,3 +113,5 @@ export default function ListOfProduct() {
     </div>
   );
 }
+
+export default RecentlyAdded;

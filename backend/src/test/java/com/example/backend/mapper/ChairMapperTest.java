@@ -39,8 +39,8 @@ public class ChairMapperTest {
     @Test
     void mapFromObjectsToChairDTO() {
         // Given: A list of Object[] representing rows from the database
-        Object[] obj1 = { "Chair1", "A comfortable chair", "NEW", "Red", "110cm", "15kg", "10%", "img1_1.url" };
-        Object[] obj2 = { "Chair2", "A stylish chair", "NEW", "Blue", "110cm", "13kg", "10%", "img2_1.url" };
+        Object[] obj1 = { "Chair1", "A comfortable chair", "NEW", "img1_1.url", 1000 };
+        Object[] obj2 = { "Chair2", "A stylish chair", "NEW", "img2_1.url", 1000 };
         List<Object[]> data = Arrays.asList(obj1, obj2);
 
         // When: We map this list to a list of ChairDTOs
@@ -54,19 +54,15 @@ public class ChairMapperTest {
         assertThat(chair1.getName()).isEqualTo("Chair1");
         assertThat(chair1.getImage_url()).isEqualTo("img1_1.url");
         assertThat(chair1.getDescription()).isEqualTo("A comfortable chair");
-        assertThat(chair1.getColor()).isEqualTo("Red");
-        assertThat(chair1.getHeight()).isEqualTo("110cm");
-        assertThat(chair1.getWeight()).isEqualTo("15kg");
-        assertThat(chair1.getDiscount()).isEqualTo("10%");
+        assertThat(chair1.getStatus()).isEqualTo("NEW");
+        assertThat(chair1.getPrice()).isEqualTo(1000);
 
         ChairDTO chair2 = chairDTOs.get(1);
         assertThat(chair2.getName()).isEqualTo("Chair2");
         assertThat(chair2.getImage_url()).isEqualTo("img2_1.url");
         assertThat(chair2.getDescription()).isEqualTo("A stylish chair");
-        assertThat(chair2.getColor()).isEqualTo("Blue");
-        assertThat(chair2.getHeight()).isEqualTo("110cm");
-        assertThat(chair2.getWeight()).isEqualTo("13kg");
-        assertThat(chair2.getDiscount()).isEqualTo("10%");
+        assertThat(chair1.getStatus()).isEqualTo("NEW");
+        assertThat(chair1.getPrice()).isEqualTo(1000);
     }
 
     @Test

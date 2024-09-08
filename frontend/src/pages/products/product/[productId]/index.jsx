@@ -13,7 +13,7 @@
   }
   ```
 */
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { StarIcon } from "@heroicons/react/20/solid";
 import {
   Dialog,
@@ -25,53 +25,12 @@ import {
   Transition,
 } from "@headlessui/react";
 import { Rating } from "@mui/material";
+import {
+  getChairDetails,
+  getChairReviews
+} from "../../../../services/productsService";
+import Inconnu from "../../../../../public/Inconnu.jpg"
 
-const product = {
-  name: "Ergonomic Office Chair",
-  version: { name: "Classic", date: "August 22, 2024", datetime: "2024-08-22" },
-  price: "$299",
-  description:
-    "Experience superior comfort with our Ergonomic Office Chair, designed for all-day support. Perfect for home offices and professional settings.",
-  highlights: [
-    "Adjustable lumbar support",
-    "Breathable mesh back",
-    "360-degree swivel base",
-  ],
-  imageSrc:
-    "https://tailwindui.com/img/ecommerce-images/product-page-05-product-01.jpg",
-  imageAlt:
-    "Sample of 30 icons with friendly and fun details in outline, filled, and brand color styles.",
-};
-const reviews = {
-  average: 4,
-  featured: [
-    {
-      id: 1,
-      rating: 5,
-      content: `
-        <p>This icon pack is just what I need for my latest project. There's an icon for just about anything I could ever need. Love the playful look!</p>
-      `,
-      date: "July 16, 2021",
-      datetime: "2021-07-16",
-      author: "Emily Selman",
-      avatarSrc:
-        "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80",
-    },
-    {
-      id: 2,
-      rating: 5,
-      content: `
-        <p>Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so it's a steal at this price.</p>
-      `,
-      date: "July 12, 2021",
-      datetime: "2021-07-12",
-      author: "Hector Gibbons",
-      avatarSrc:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80",
-    },
-    // More reviews...
-  ],
-};
 const faqs = [
   {
     question: "What format are these icons?",
@@ -95,7 +54,7 @@ const license = {
     <p>For personal and professional use. You cannot resell or redistribute these icons in their original or modified state.</p>
     
     <ul role="list">
-    <li>You\'re allowed to use the icons in unlimited projects.</li>
+    <li>You're allowed to use the icons in unlimited projects.</li>
     <li>Attribution is not required to use the icons.</li>
     </ul>
     
@@ -106,11 +65,11 @@ const license = {
     <li>Make them your own. Change the colors to suit your project or brand.</li>
     </ul>
     
-    <h4>What you can\'t do with it</h4>
+    <h4>What you can't do with it</h4>
     
     <ul role="list">
-    <li>Don\'t be greedy. Selling or distributing these icons in their original or modified state is prohibited.</li>
-    <li>Don\'t be evil. These icons cannot be used on websites or applications that promote illegal or immoral beliefs or activities.</li>
+    <li>Don't be greedy. Selling or distributing these icons in their original or modified state is prohibited.</li>
+    <li>Don't be evil. These icons cannot be used on websites or applications that promote illegal or immoral beliefs or activities.</li>
     </ul>
   `,
 };
@@ -123,6 +82,10 @@ export default function ProductPage() {
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(0);
+  const [selectedImg,setSelectedImg] = useState()
+  const [product,setProduct] = useState()
+  const [reviews,setReviews] = useState()
+  const [highlights,setHighlights] = useState({Color : "Gray",Height : "107 cm", Width : "58 cm",Weight : "20 Kg"})
   const openReviewModal = () => setIsReviewOpen(true);
   const closeReviewModal = () => setIsReviewOpen(false);
   const submitReview = () => {
@@ -130,70 +93,109 @@ export default function ProductPage() {
     console.log("Review submitted:", reviewText, reviewRating);
     closeReviewModal();
   };
+
+
+
+  useEffect(()=>{
+    const path =  window.location.href.split("/")
+    const name = decodeURIComponent(path[4]);
+    const fetchChairDetaild = async () => {
+      const response = await getChairDetails(name)
+      setProduct(response)
+    }
+
+    const fetchChairReviews = async () =>{
+      const response = await getChairReviews(name)
+      setReviews(response)
+    }
+    fetchChairDetaild()
+    fetchChairReviews()
+    
+  },[])
+
+
+  useEffect(()=>{
+    if(product){
+      setSelectedImg(product.images[0])
+      setHighlights({Color : product.color,Height : product.height, Width : product.width,Weight : product.weight})
+    }
+  },[product])
   return (
-    <div className="bg-white">
+    <div className="bg-white border mb-24">
       <div className="mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         {/* Product */}
         <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
           {/* Product image */}
           <div className="lg:col-span-4 lg:row-end-1">
-            <div className="aspect-h-3 aspect-w-4 overflow-hidden rounded-lg bg-gray-100">
+            <div className="aspect-h-3 aspect-w-4 overflow-hidden rounded-lg flex justify-center">
               <img
-                src={product.imageSrc}
-                alt={product.imageAlt}
-                className="object-cover object-center"
+                src={selectedImg}
+                className="object-cover w-3/5 "
               />
+            </div>
+            <div className=" py-12 flex">
+              {
+                product && product.images.map((image,index) => (
+                  image != selectedImg && 
+                  <img 
+                    key={index} 
+                    src={image} 
+                    onClick={()=> setSelectedImg(product.images[index])}
+                    className="lg:w-32 w-28 border rounded p-5 ml-5" />
+                ))
+              }
+
             </div>
           </div>
 
           {/* Product details */}
-          <div className="mx-auto mt-14 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none">
+          <div className="mx-auto max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none ">
             <div className="flex flex-col-reverse">
-              <div className="mt-4">
+            <div>
+                <h3 className="sr-only">Reviews</h3>
+               <div className="flex py-3 items-center">
+                <span className="pr-10 text-xl font-extrabold text-green-700">${product && product.price}</span>
+                <div className="flex items-center">
+                {[1, 2, 3, 4, 5].map((rating) => (
+                      <StarIcon
+                        key={rating}
+                        className={classNames(
+                           product && product.rate >= rating
+                            ? "text-yellow-400"
+                            : "text-gray-300",
+                          "h-5 w-5 flex-shrink-0"
+                        )}
+                        aria-hidden="true"
+                      />
+                    ))}
+                  </div>
+               </div>
+              </div>
+              <div className="">
                 <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-                  {product.name}
+                  {product && product.name}
                 </h1>
 
                 <h2 id="information-heading" className="sr-only">
                   Product information
                 </h2>
-                <p className="mt-2 text-sm text-gray-500">
-                  Version {product.version.name} (Updated{" "}
-                  <time dateTime={product.version.datetime}>
-                    {product.version.date}
-                  </time>
-                  )
-                </p>
-              </div>
-
-              <div>
-                <h3 className="sr-only">Reviews</h3>
-                <div className="flex items-center">
-                  {[0, 1, 2, 3, 4].map((rating) => (
-                    <StarIcon
-                      key={rating}
-                      className={classNames(
-                        reviews.average > rating
-                          ? "text-yellow-400"
-                          : "text-gray-300",
-                        "h-5 w-5 flex-shrink-0"
-                      )}
-                      aria-hidden="true"
-                    />
-                  ))}
-                </div>
-                <p className="sr-only">{reviews.average} out of 5 stars</p>
               </div>
             </div>
 
-            <p className="mt-6 text-gray-500">{product.description}</p>
+            <p className="py-1 text-gray-500">{product && product.description}</p>
+
+            <div className="py-5 flex flex-col">
+            {Object.entries(highlights).map(([key, value]) => (
+              <span className="text-gray-500 py-1" key={key}>{key} : {value}</span>
+            ))}
+            </div>
 
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
               <button
                 type="button"
                 className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
               >
-                Pay {product.price}
+                Add to Cart
               </button>
               <button
                 type="button"
@@ -203,18 +205,7 @@ export default function ProductPage() {
               </button>
             </div>
 
-            <div className="mt-10 border-t border-gray-200 pt-10">
-              <h3 className="text-sm font-medium text-gray-900">Highlights</h3>
-              <div className="prose prose-sm mt-4 text-gray-500">
-                <ul role="list">
-                  {product.highlights.map((highlight) => (
-                    <li key={highlight}>{highlight}</li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="mt-10 border-t border-gray-200 pt-10">
+            <div className="mt-10 border-gray-200 pt-10">
               <h3 className="text-sm font-medium text-gray-900">License</h3>
               <p className="mt-4 text-sm text-gray-500">
                 {license.summary}{" "}
@@ -292,7 +283,7 @@ export default function ProductPage() {
 
           <div className="mx-auto mt-16 w-full max-w-2xl lg:col-span-4 lg:mt-0 lg:max-w-none">
             <TabGroup>
-              <div className="border-b border-gray-200">
+              <div className="border-b border-gray-200 relative">
                 <TabList className="-mb-px flex space-x-8">
                   <Tab
                     className={({ selected }) =>
@@ -318,85 +309,17 @@ export default function ProductPage() {
                   >
                     FAQ
                   </Tab>
-                  <Tab
-                    className={({ selected }) =>
-                      classNames(
-                        selected
-                          ? "border-indigo-600 text-indigo-600"
-                          : "border-transparent text-gray-700 hover:border-gray-300 hover:text-gray-800",
-                        "whitespace-nowrap border-b-2 py-6 text-sm font-medium"
-                      )
-                    }
+                  <button
+                    onClick={openReviewModal}
+                    className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-md absolute right-0"
                   >
-                    License
-                  </Tab>
+                    Leave a Review
+                  </button>
                 </TabList>
               </div>
               <TabPanels as={Fragment}>
                 <TabPanel className="-mb-10">
                   <h3 className="sr-only">Customer Reviews</h3>
-                  {/* <Transition show={isReviewOpen} as={Fragment}>
-                    <Dialog
-                      as="div"
-                      className="relative z-10"
-                      onClose={closeReviewModal}
-                    >
-                      <Transition.Child
-                        as={Fragment}
-                        enter="ease-out duration-300"
-                        enterFrom="opacity-0"
-                        enterTo="opacity-100"
-                        leave="ease-in duration-200"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                      >
-                        <div className="fixed inset-0 bg-black bg-opacity-25" />
-                      </Transition.Child>
-
-                      <div className="fixed inset-0 z-10 overflow-y-auto">
-                        <div className="flex min-h-full items-center justify-center p-4 text-center">
-                          <Transition.Child
-                            as={Fragment}
-                            enter="ease-out duration-300"
-                            enterFrom="opacity-0 scale-95"
-                            enterTo="opacity-100 scale-100"
-                            leave="ease-in duration-200"
-                            leaveFrom="opacity-100 scale-100"
-                            leaveTo="opacity-0 scale-95"
-                          >
-                            <Dialog.Panel className="max-w-sm p-6 mx-auto bg-white rounded">
-                              <Dialog.Title className="text-lg font-bold">
-                                Leave a Review
-                              </Dialog.Title>
-
-                              <div className="flex items-center mt-4 mb-2">
-                                <Rating
-                                  name="half-rating"
-                                  defaultValue={0}
-                                  precision={0.5}
-                                />
-                              </div>
-
-                              <textarea
-                                value={reviewText}
-                                onChange={(e) => setReviewText(e.target.value)}
-                                placeholder="Write your review here..."
-                                className="w-full p-2 border border-gray-300 rounded-md"
-                                rows="4"
-                              />
-
-                              <button
-                                onClick={submitReview}
-                                className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-md"
-                              >
-                                Submit Review
-                              </button>
-                            </Dialog.Panel>
-                          </Transition.Child>
-                        </div>
-                      </div>
-                    </Dialog>
-                  </Transition> */}
                   <Transition show={isReviewOpen} as={Fragment}>
                     <Dialog
                       as="div"
@@ -408,7 +331,7 @@ export default function ProductPage() {
                         aria-hidden="true"
                       />
                       <div className="fixed inset-0 flex items-center justify-center p-4">
-                        <Dialog.Panel className="mx-auto max-w-lg rounded bg-white p-6 px-3 shadow-lg">
+                        <Dialog.Panel className="mx-auto max-w-lg rounded bg-white p-6  px-16 shadow-lg">
                           <Dialog.Title className="text-lg font-semibold text-gray-900">
                             Write a Review
                           </Dialog.Title>
@@ -427,7 +350,7 @@ export default function ProductPage() {
                               value={reviewText}
                               onChange={(e) => setReviewText(e.target.value)}
                               rows="4"
-                              className="mt-4 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                              className="mt-4 outline-none block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                               placeholder="Write your review here..."
                             />
                           </div>
@@ -452,21 +375,14 @@ export default function ProductPage() {
                     </Dialog>
                   </Transition>
 
-                  <button
-                    onClick={openReviewModal}
-                    className="mt-4 bg-indigo-600 text-white px-4 py-2 rounded-md"
-                  >
-                    Leave a Review
-                  </button>
-
-                  {reviews.featured.map((review, reviewIdx) => (
+                  {reviews && reviews.map((review, reviewIdx) => (
                     <div
-                      key={review.id}
+                      key={review.first_name}
                       className="flex space-x-4 text-sm text-gray-500"
                     >
                       <div className="flex-none py-10">
                         <img
-                          src={review.avatarSrc}
+                          src={review.pictur_url ? review.pictur_url  : Inconnu}
                           alt=""
                           className="h-10 w-10 rounded-full bg-gray-100"
                         />
@@ -478,18 +394,18 @@ export default function ProductPage() {
                         )}
                       >
                         <h3 className="font-medium text-gray-900">
-                          {review.author}
+                          {review.first_name} {review.last_name}
                         </h3>
                         <p>
-                          <time dateTime={review.datetime}>{review.date}</time>
+                          <time dateTime="22-08-2014">22-08-2014</time>
                         </p>
 
                         <div className="mt-4 flex items-center">
-                          {[0, 1, 2, 3, 4].map((rating) => (
+                          {[1,2, 3, 4,5].map((rating) => (
                             <StarIcon
                               key={rating}
                               className={classNames(
-                                review.rating > rating
+                                review.rate >= rating
                                   ? "text-yellow-400"
                                   : "text-gray-300",
                                 "h-5 w-5 flex-shrink-0"
@@ -499,12 +415,12 @@ export default function ProductPage() {
                           ))}
                         </div>
                         <p className="sr-only">
-                          {review.rating} out of 5 stars
+                          {review.rate} out of 5 stars
                         </p>
 
                         <div
                           className="prose prose-sm mt-4 max-w-none text-gray-500"
-                          dangerouslySetInnerHTML={{ __html: review.content }}
+                          dangerouslySetInnerHTML={{ __html: review.comment }}
                         />
                       </div>
                     </div>
@@ -540,7 +456,7 @@ export default function ProductPage() {
             </TabGroup>
           </div>
         </div>
-      </div>
+      </div> 
     </div>
   );
 }

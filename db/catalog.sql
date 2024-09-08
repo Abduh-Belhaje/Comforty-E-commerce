@@ -3,6 +3,7 @@ select * from catalog.categories;
 
 SELECT indexname FROM pg_indexes WHERE schemaname = 'catalog';
 
+
 CREATE INDEX idx_chairs_name ON catalog.chairs(name);
 
 
@@ -18,7 +19,7 @@ WITH rankedImages AS (
 	FROM catalog.images
 )
 
-SELECT C.name,C.description,C.status,C.color,C.height,C.weight,C.discount , I.image_url
+SELECT C.name,C.description,C.status, I.image_url,C.price
 FROM catalog.chairs C
 INNER JOIN rankedImages I
 ON C.name = I.name 
@@ -28,7 +29,7 @@ ORDER BY created_at ASC;
 
 
 
-
+select * from catalog.getAllChairs
 
 -------------- -----------------------------------
 -- View for showing the 4 recent added product
@@ -42,7 +43,7 @@ WITH rankedImages AS (
 	FROM catalog.images
 )
 
-SELECT C.name,C.description,C.status,C.color,C.height,C.weight,C.discount , I.image_url
+SELECT C.name,C.description,C.status,I.image_url,C.price
 FROM catalog.chairs C
 INNER JOIN rankedImages I
 ON C.name = I.name 
@@ -58,7 +59,6 @@ LIMIT 4;
 ------------------------
 --------------------------- Function to get Chair info with and its all images
 ------------------------
-DROP TYPE catalog.chair_info_type
 
 CREATE TYPE catalog.chair_info_type AS (
     name VARCHAR,
@@ -68,7 +68,10 @@ CREATE TYPE catalog.chair_info_type AS (
     height VARCHAR,
     weight VARCHAR,
     discount VARCHAR,
-    image_url VARCHAR
+    image_url VARCHAR,
+	price INT,
+	width VARCHAR,
+	rate NUMERIC
 );
 
 
@@ -77,26 +80,40 @@ RETURNS SETOF catalog.chair_info_type AS $$
 BEGIN
 
 	RETURN QUERY
-	SELECT C.name,C.description,C.status,C.color,C.height,C.weight,C.discount , I.image_url 
+	SELECT C.name,C.description,C.status,C.color,C.height,
+			C.weight,C.discount , I.image_url, C.price,C.width ,R.rate
 	FROM catalog.chairs C
 	INNER JOIN catalog.images I
 	ON C.name = I.name 
+	INNER JOIN (
+		SELECT chair_id , ROUND(AVG(rating)) AS rate FROM catalog.reviews GROUP BY chair_id
+	) R
+	ON C.chair_id = R.chair_id
 	WHERE C.name = chair_name;
 	
 END;
 $$ LANGUAGE plpgsql
 
 
-
-
+select * from catalog.get_Chair_info('Patio%20Chairs')
 
 
 -------------
 ---------------- Func to Fetch chairs by category
 -------------
 
+
+CREATE TYPE catalog.chairs_type AS (
+    name VARCHAR,
+    description VARCHAR,
+    status VARCHAR,
+    image_url VARCHAR,
+	price INT
+);
+
+
 CREATE OR REPLACE FUNCTION catalog.get_chairs_by_category(ctg VARCHAR)
-RETURNS SETOF catalog.chair_info_type AS $$
+RETURNS SETOF catalog.chairs_type AS $$
 DECLARE 
 	ctgID INT ;
 BEGIN
@@ -105,7 +122,7 @@ BEGIN
 
 	-- SELECT ALL THE CHAIRS WITH THE GITTEN ID
 	RETURN QUERY
-	SELECT C.name,C.description,C.status,C.color,C.height,C.weight,C.discount , I.image_url 
+	SELECT C.name,C.description,C.status,I.image_url ,C.price
 	FROM catalog.chairs C
 	INNER JOIN (
 			SELECT name , image_url ,
@@ -120,4 +137,68 @@ $$ LANGUAGE plpgsql
 
 
 
-select * from catalog.get_chairs_by_category('Office')
+
+
+
+
+-----------------------------------------------------------------------
+--------------------- Get Reviews comments and rate -------------------
+
+
+-- Tables : chairs , reviews , users , user_profile
+-- Attributes : imge_url , comment , rate , first_name , last_name
+
+CREATE OR REPLACE FUNCTION catalog.get_reviews(chairName VARCHAR)
+RETURNS TABLE(
+	first_name VARCHAR ,
+	last_name VARCHAR,
+	comment VARCHAR,
+	rating NUMERIC,
+	picture_url VARCHAR
+	) AS $$
+DECLARE 
+	chairID INT;
+BEGIN
+	SELECT chair_id INTO chairID FROM catalog.chairs WHERE name = chairName;
+	
+	RETURN QUERY
+	SELECT U2.first_name , U2.last_name ,R.comment , ROUND(R.rating)::NUMERIC , U2.picture_url 
+	FROM catalog.reviews R
+	INNER JOIN catalog.chairs C
+	ON R.chair_id = C.chair_id
+	INNER JOIN (
+		SELECT U1.id , U1.first_name , U1.last_name , P.picture_url
+		FROM accounts.users U1
+		INNER JOIN accounts.user_profile P
+		ON U1.id = P.user_id
+	) U2
+	ON R.user_id = U2.id 
+	WHERE R.chair_id = chairID;
+END;
+$$ LANGUAGE plpgsql
+
+
+
+select * from catalog.get_reviews('Ergonomic Chair')
+
+
+
+select * from catalog.reviews
+select * from accounts.users;
+select * from accounts.user_profile;
+
+INSERT INTO accounts.user_profile (profile_id,created_at,user_id,status)
+VALUES (3,NOW(),3,'ACTIVE')
+
+
+
+
+
+
+
+------- Trigger for users table to auto-create a user_profile record
+
+
+
+
+------- Handle status

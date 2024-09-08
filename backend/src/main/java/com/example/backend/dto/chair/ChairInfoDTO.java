@@ -1,5 +1,6 @@
 package com.example.backend.dto.chair;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -26,5 +27,11 @@ public class ChairInfoDTO {
     private String discount;
 
     private List<String> images;
+
+    private int price;
+
+    private String width;
+
+    private BigDecimal rate;
 
 }

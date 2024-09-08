@@ -58,7 +58,7 @@ public class ChairServiceTest {
         @Test
         void shouldAddNewChair() throws UploadFileException, FileConvertingException, FailedAddingChairException {
                 AddChairDTO chairDTO = new AddChairDTO("xx", "xx", new ArrayList<MultipartFile>(), "ooo", "red", "10",
-                                "10", "0");
+                                "10", "0", null, null);
 
                 given(chairMapper.toEntity(chairDTO))
                                 .willReturn(new Chair());

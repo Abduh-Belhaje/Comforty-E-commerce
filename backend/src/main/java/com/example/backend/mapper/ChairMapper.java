@@ -1,5 +1,6 @@
 package com.example.backend.mapper;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import org.mapstruct.Mapping;
 import com.example.backend.dto.chair.AddChairDTO;
 import com.example.backend.dto.chair.ChairDTO;
 import com.example.backend.dto.chair.ChairInfoDTO;
+import com.example.backend.dto.chair.ChairReviewsDTO;
 import com.example.backend.model.Chair;
 
 @Mapper(componentModel = "spring")
@@ -36,6 +38,9 @@ public interface ChairMapper {
         String height = (String) firstObj[4];
         String weight = (String) firstObj[5];
         String discount = (String) firstObj[6];
+        int price = (int) firstObj[8];
+        String width = (String) firstObj[9];
+        BigDecimal rate = (BigDecimal) firstObj[10];
 
         List<String> images = new ArrayList<>();
 
@@ -43,7 +48,21 @@ public interface ChairMapper {
             images.add((String) object[7]);
         }
 
-        return new ChairInfoDTO(name, description, status, color, height, weight, discount, images);
+        return new ChairInfoDTO(name, description, status, color, height, weight, discount, images, price, width, rate);
+    }
+
+    // Map from object[] to ChairReviewsDTO
+    default List<ChairReviewsDTO> toChairReviewsDTO(List<Object[]> objs) {
+        return objs.stream().map(this::mapObjectArrayToChairReviewsDTO).collect(Collectors.toList());
+    }
+
+    default ChairReviewsDTO mapObjectArrayToChairReviewsDTO(Object[] obj) {
+        return new ChairReviewsDTO(
+                (String) obj[0], // first_name
+                (String) obj[1], // last_name
+                (String) obj[2], // comment
+                (BigDecimal) obj[3], // rate
+                (String) obj[4]); // image_url
     }
 
     // Method to map a list of Object[] to a list of ChairDTOs
@@ -57,11 +76,7 @@ public interface ChairMapper {
                 (String) obj[0], // name
                 (String) obj[1], // description
                 (String) obj[2], // status
-                (String) obj[3], // color
-                (String) obj[4], // height
-                (String) obj[5], // weight
-                (String) obj[6], // discount
-                (String) obj[7] // image_url
-        );
+                (String) obj[3], // image_url
+                (int) obj[4]);
     }
 }

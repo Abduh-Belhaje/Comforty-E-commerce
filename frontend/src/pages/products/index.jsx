@@ -32,7 +32,7 @@ function Products() {
   }, [selectedCategory, setChairs]); // Dependency array to re-run when selectedCategory changes
 
   return (
-    <div>
+    <div className="mb-40">
       <RecentlyAdded recentProducts={recentProducts} />
       <Filter />
 

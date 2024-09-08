@@ -1,4 +1,4 @@
-version: '3.1'
+version: "3.1"
 services:
   postgres-db:
     image: postgres
@@ -15,7 +15,7 @@ services:
       - ./postgres-data:/var/lib/postgresql/data
     networks:
       - mynetwork
-  
+
   comforty:
     image: abdo001/comforty:v2
     ports:

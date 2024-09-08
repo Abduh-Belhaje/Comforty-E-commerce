@@ -26,10 +26,10 @@ public class ChairRepositoryTest {
 
     @BeforeEach
     void setup() {
-        Chair chair1 = new Chair(1L, "alpha", "NEW", "abab", "red", "10", "10",
-                new Timestamp(System.currentTimeMillis()), "0");
-        Chair chair2 = new Chair(1L, "beta", "NEW", "abab", "red", "10", "10",
-                new Timestamp(System.currentTimeMillis()), "0");
+        Chair chair1 = new Chair(1L, "alpha", "NEW", "abab", "red", "10", "10", 10, "10", "10",
+                new Timestamp(System.currentTimeMillis()));
+        Chair chair2 = new Chair(2L, "beta", "NEW", "abab", "red", "10", "10", 10, "10", "10",
+                new Timestamp(System.currentTimeMillis()));
 
         underTest.save(chair1);
         underTest.save(chair2);

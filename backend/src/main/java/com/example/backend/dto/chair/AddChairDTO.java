@@ -33,8 +33,14 @@ public class AddChairDTO {
     @JsonProperty("height")
     private String height;
 
+    @JsonProperty("width")
+    private String width;
+
     @JsonProperty("weight")
     private String weight;
+
+    @JsonProperty("price")
+    private String price;
 
     @JsonProperty("discount")
     private String discount;

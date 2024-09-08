@@ -47,6 +47,8 @@ CREATE TABLE IF NOT EXISTS catalog.chairs (
     color VARCHAR(10),
     height VARCHAR(4),
     weight VARCHAR(4),
+    width VARCHAR(4),
+    price VARCHAR(4),
     discount VARCHAR(4),
     description VARCHAR(255)
 );

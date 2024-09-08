@@ -217,7 +217,7 @@ function Header() {
                     >
                       <div className="flex items-center space-x-3">
                         <img
-                          src={item.imageSrc}
+                          src={item.image_url}
                           alt={item.name}
                           className="w-10 h-10 object-cover rounded"
                         />
@@ -229,7 +229,7 @@ function Header() {
                         </div>
                       </div>
                       <button
-                        onClick={() => removeFromWatchlist(item.id)}
+                        onClick={() => removeFromWatchlist(item.name)}
                         className="text-sm font-medium text-red-600 hover:text-red-800"
                       >
                         Remove

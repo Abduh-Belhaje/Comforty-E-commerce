@@ -229,7 +229,7 @@ function Header() {
                         </div>
                       </div>
                       <button
-                        onClick={() => removeFromWatchlist(item.id)}
+                        onClick={() => removeFromWatchlist(item.name)}
                         className="text-sm font-medium text-red-600 hover:text-red-800"
                       >
                         Remove

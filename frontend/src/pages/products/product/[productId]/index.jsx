@@ -25,55 +25,12 @@ import {
   Transition,
 } from "@headlessui/react";
 import { Rating } from "@mui/material";
+import {
+  getChairDetails,
+  getChairReviews
+} from "../../../../services/productsService";
+import Inconnu from "../../../../../public/Inconnu.jpg"
 
-const product = {
-  name: "Ergonomic Office Chair",
-  version: { name: "Classic", date: "August 22, 2024", datetime: "2024-08-22" },
-  price: "299",
-  description:
-    "Experience superior comfort with our Ergonomic Office Chair, designed for all-day support. Perfect for home offices and professional settings.",
-  highlights: { 
-    Color : "Gray",
-    Height : "107 cm",
-    Width : "58 cm",
-    Weight : "20 Kg",
-  },
-  images: [
-    "https://comfortyawsbucket.s3.amazonaws.com/1725458490856_61gdKNppP2L._AC_SX569_.jpg",
-    "https://comfortyawsbucket.s3.amazonaws.com/1725458491627_61gv1HXfMaL._AC_SX569_.jpg",
-    "https://comfortyawsbucket.s3.amazonaws.com/1725458491884_61HZhl9EOTL._AC_SX569_.jpg"
-  ]
-};
-const reviews = {
-  average: 4,
-  featured: [
-    {
-      id: 1,
-      rating: 5,
-      content: `
-        <p>This icon pack is just what I need for my latest project. There's an icon for just about anything I could ever need. Love the playful look!</p>
-      `,
-      date: "July 16, 2021",
-      datetime: "2021-07-16",
-      author: "Emily Selman",
-      avatarSrc:
-        "https://images.unsplash.com/photo-1502685104226-ee32379fefbe?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80",
-    },
-    {
-      id: 2,
-      rating: 5,
-      content: `
-        <p>Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so it's a steal at this price.</p>
-      `,
-      date: "July 12, 2021",
-      datetime: "2021-07-12",
-      author: "Hector Gibbons",
-      avatarSrc:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=8&w=256&h=256&q=80",
-    },
-    // More reviews...
-  ],
-};
 const faqs = [
   {
     question: "What format are these icons?",
@@ -126,6 +83,9 @@ export default function ProductPage() {
   const [reviewText, setReviewText] = useState("");
   const [reviewRating, setReviewRating] = useState(0);
   const [selectedImg,setSelectedImg] = useState()
+  const [product,setProduct] = useState()
+  const [reviews,setReviews] = useState()
+  const [highlights,setHighlights] = useState({Color : "Gray",Height : "107 cm", Width : "58 cm",Weight : "20 Kg"})
   const openReviewModal = () => setIsReviewOpen(true);
   const closeReviewModal = () => setIsReviewOpen(false);
   const submitReview = () => {
@@ -137,8 +97,29 @@ export default function ProductPage() {
 
 
   useEffect(()=>{
-    setSelectedImg(product.images[0])
+    const path =  window.location.href.split("/")
+    const name = decodeURIComponent(path[4]);
+    const fetchChairDetaild = async () => {
+      const response = await getChairDetails(name)
+      setProduct(response)
+    }
+
+    const fetchChairReviews = async () =>{
+      const response = await getChairReviews(name)
+      setReviews(response)
+    }
+    fetchChairDetaild()
+    fetchChairReviews()
+    
   },[])
+
+
+  useEffect(()=>{
+    if(product){
+      setSelectedImg(product.images[0])
+      setHighlights({Color : product.color,Height : product.height, Width : product.width,Weight : product.weight})
+    }
+  },[product])
   return (
     <div className="bg-white border mb-24">
       <div className="mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
@@ -149,12 +130,12 @@ export default function ProductPage() {
             <div className="aspect-h-3 aspect-w-4 overflow-hidden rounded-lg flex justify-center">
               <img
                 src={selectedImg}
-                className="object-cover w-3/5"
+                className="object-cover w-3/5 "
               />
             </div>
             <div className=" py-12 flex">
               {
-                product.images.map((image,index) => (
+                product && product.images.map((image,index) => (
                   image != selectedImg && 
                   <img 
                     key={index} 
@@ -168,18 +149,18 @@ export default function ProductPage() {
           </div>
 
           {/* Product details */}
-          <div className="mx-auto mt-14 max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none ">
+          <div className="mx-auto max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none ">
             <div className="flex flex-col-reverse">
             <div>
                 <h3 className="sr-only">Reviews</h3>
                <div className="flex py-3 items-center">
-                <span className="pr-16 text-xl font-extrabold text-green-700">{product.price} DH</span>
+                <span className="pr-10 text-xl font-extrabold text-green-700">${product && product.price}</span>
                 <div className="flex items-center">
-                    {[0, 1, 2, 3, 4].map((rating) => (
+                {[1, 2, 3, 4, 5].map((rating) => (
                       <StarIcon
                         key={rating}
                         className={classNames(
-                          reviews.average > rating
+                           product && product.rate >= rating
                             ? "text-yellow-400"
                             : "text-gray-300",
                           "h-5 w-5 flex-shrink-0"
@@ -189,30 +170,22 @@ export default function ProductPage() {
                     ))}
                   </div>
                </div>
-                <p className="sr-only">{reviews.average} out of 5 stars</p>
               </div>
-              <div className="mt-4">
+              <div className="">
                 <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-                  {product.name}
+                  {product && product.name}
                 </h1>
 
                 <h2 id="information-heading" className="sr-only">
                   Product information
                 </h2>
-                <p className="mt-2 text-sm text-gray-500">
-                  Version {product.version.name} (Updated{" "}
-                  <time dateTime={product.version.datetime}>
-                    {product.version.date}
-                  </time>
-                  )
-                </p>
               </div>
             </div>
 
-            <p className="py-1 text-gray-500">{product.description}</p>
+            <p className="py-1 text-gray-500">{product && product.description}</p>
 
             <div className="py-5 flex flex-col">
-            {Object.entries(product.highlights).map(([key, value]) => (
+            {Object.entries(highlights).map(([key, value]) => (
               <span className="text-gray-500 py-1" key={key}>{key} : {value}</span>
             ))}
             </div>
@@ -402,14 +375,14 @@ export default function ProductPage() {
                     </Dialog>
                   </Transition>
 
-                  {reviews.featured.map((review, reviewIdx) => (
+                  {reviews && reviews.map((review, reviewIdx) => (
                     <div
-                      key={review.id}
+                      key={review.first_name}
                       className="flex space-x-4 text-sm text-gray-500"
                     >
                       <div className="flex-none py-10">
                         <img
-                          src={review.avatarSrc}
+                          src={review.pictur_url ? review.pictur_url  : Inconnu}
                           alt=""
                           className="h-10 w-10 rounded-full bg-gray-100"
                         />
@@ -421,18 +394,18 @@ export default function ProductPage() {
                         )}
                       >
                         <h3 className="font-medium text-gray-900">
-                          {review.author}
+                          {review.first_name} {review.last_name}
                         </h3>
                         <p>
-                          <time dateTime={review.datetime}>{review.date}</time>
+                          <time dateTime="22-08-2014">22-08-2014</time>
                         </p>
 
                         <div className="mt-4 flex items-center">
-                          {[0, 1, 2, 3, 4].map((rating) => (
+                          {[1,2, 3, 4,5].map((rating) => (
                             <StarIcon
                               key={rating}
                               className={classNames(
-                                review.rating > rating
+                                review.rate >= rating
                                   ? "text-yellow-400"
                                   : "text-gray-300",
                                 "h-5 w-5 flex-shrink-0"
@@ -442,12 +415,12 @@ export default function ProductPage() {
                           ))}
                         </div>
                         <p className="sr-only">
-                          {review.rating} out of 5 stars
+                          {review.rate} out of 5 stars
                         </p>
 
                         <div
                           className="prose prose-sm mt-4 max-w-none text-gray-500"
-                          dangerouslySetInnerHTML={{ __html: review.content }}
+                          dangerouslySetInnerHTML={{ __html: review.comment }}
                         />
                       </div>
                     </div>

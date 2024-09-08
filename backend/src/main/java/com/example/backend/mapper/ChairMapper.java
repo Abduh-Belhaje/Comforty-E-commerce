@@ -11,6 +11,7 @@ import org.mapstruct.Mapping;
 import com.example.backend.dto.chair.AddChairDTO;
 import com.example.backend.dto.chair.ChairDTO;
 import com.example.backend.dto.chair.ChairInfoDTO;
+import com.example.backend.dto.chair.ChairReviewsDTO;
 import com.example.backend.model.Chair;
 
 @Mapper(componentModel = "spring")
@@ -50,6 +51,20 @@ public interface ChairMapper {
         return new ChairInfoDTO(name, description, status, color, height, weight, discount, images, price, width, rate);
     }
 
+    // Map from object[] to ChairReviewsDTO
+    default List<ChairReviewsDTO> toChairReviewsDTO(List<Object[]> objs) {
+        return objs.stream().map(this::mapObjectArrayToChairReviewsDTO).collect(Collectors.toList());
+    }
+
+    default ChairReviewsDTO mapObjectArrayToChairReviewsDTO(Object[] obj) {
+        return new ChairReviewsDTO(
+                (String) obj[0], // first_name
+                (String) obj[1], // last_name
+                (String) obj[2], // comment
+                (BigDecimal) obj[3], // rate
+                (String) obj[4]); // image_url
+    }
+
     // Method to map a list of Object[] to a list of ChairDTOs
     default List<ChairDTO> toDto(List<Object[]> objs) {
         return objs.stream().map(this::mapObjectArrayToChairDTO).collect(Collectors.toList());
@@ -61,11 +76,7 @@ public interface ChairMapper {
                 (String) obj[0], // name
                 (String) obj[1], // description
                 (String) obj[2], // status
-                (String) obj[3], // color
-                (String) obj[4], // height
-                (String) obj[5], // weight
-                (String) obj[6], // discount
-                (String) obj[7] // image_url
-        );
+                (String) obj[3], // image_url
+                (int) obj[4]);
     }
 }

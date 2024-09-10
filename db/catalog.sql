@@ -1,10 +1,6 @@
-select * from catalog.chairs;
-select * from catalog.categories;
+ALTER TABLE catalog.reviews
+ALTER COLUMN review_id SET DEFAULT nextval('catalog.review_seq');
 
-SELECT indexname FROM pg_indexes WHERE schemaname = 'catalog';
-
-
-CREATE INDEX idx_chairs_name ON catalog.chairs(name);
 
 
 -----------------------------------------------------
@@ -179,20 +175,46 @@ $$ LANGUAGE plpgsql
 
 
 
-select * from catalog.get_reviews('Ergonomic Chair')
+-------------------------------------------------------------------|
+--------------- proc for adding a new review ----------------------|
+-------------------------------------------------------------------|
 
 
 
-select * from catalog.reviews
-select * from accounts.users;
-select * from accounts.user_profile;
+CREATE OR REPLACE PROCEDURE catalog.add_new_review(
+    userEmail VARCHAR,
+    chairName VARCHAR, 
+    rate INT, 
+    cmt VARCHAR
+)
+LANGUAGE plpgsql AS $$ 
+DECLARE
+    userID INT;
+    chairID INT;
+BEGIN
+    -- Fetch the user ID from the users table
+    SELECT id INTO userID FROM accounts.users WHERE email = userEmail;
+    
+    -- Fetch the chair ID from the chairs table using chairName
+    SELECT chair_id INTO chairID FROM catalog.chairs WHERE name = chairName;
+    
+    -- Insert a new review into the reviews table
+    INSERT INTO catalog.reviews (user_id, chair_id, rating, comment, created_at)
+    VALUES (userID, chairID, rate, cmt, NOW());
 
-INSERT INTO accounts.user_profile (profile_id,created_at,user_id,status)
-VALUES (3,NOW(),3,'ACTIVE')
+EXCEPTION
+    -- Catch 'no data found' for users or chairs
+    WHEN NO_DATA_FOUND THEN
+        RAISE EXCEPTION 'No data found. User with email: % or Chair with name: % does not exist', userEmail, chairName;
+        
+    -- Catch unique violation error (e.g., duplicate reviews)
+    WHEN UNIQUE_VIOLATION THEN
+        RAISE EXCEPTION 'A review by this user for this chair already exists';
 
-
-
-
+    -- Generic catch for other errors, but provide more context
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Operation failed. Error: %', SQLERRM;
+END; $$;
 
 
 
@@ -200,5 +222,21 @@ VALUES (3,NOW(),3,'ACTIVE')
 
 
 
+-----------------------------------------------------------------------------
+-------------------------- Handle status -----------------------------------
+-- change the status of New chairs after 3 days
 
-------- Handle status
+CREATE OR REPLACE PROCEDURE catalog.change_chair_status()
+LANGUAGE plpgsql AS $$ 
+DECLARE
+	rec RECORD;
+BEGIN
+	FOR rec IN SELECT chair_id , status ,created_at  FROM catalog.chairs 
+	LOOP
+		IF rec.status = 'NEW' AND EXTRACT(day FROM AGE(NOW(), rec.created_at)) > 3 THEN
+			UPDATE catalog.chairs SET status = 'AVAILABLE' WHERE chair_id = rec.chair_id;
+		END IF;
+	END LOOP;
+END; $$
+
+

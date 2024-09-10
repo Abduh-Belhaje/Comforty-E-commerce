@@ -46,6 +46,9 @@ public class User implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false, unique = true)
+    private String password;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Role role;
@@ -53,11 +56,11 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private Timestamp created_at;
 
-    public User(String first_name, String last_name, String email, Role role,
-            Timestamp created_at) {
+    public User(String first_name, String last_name, String email, String password, Role role, Timestamp created_at) {
         this.first_name = first_name;
         this.last_name = last_name;
         this.email = email;
+        this.password = password;
         this.role = role;
         this.created_at = created_at;
     }
@@ -98,6 +101,6 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return "";
+        return password;
     }
 }

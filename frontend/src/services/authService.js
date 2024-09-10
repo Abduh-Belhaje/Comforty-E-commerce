@@ -6,8 +6,7 @@ async function signUpUser(userData) {
       "http://localhost:8080/v1/auth/signup",
       userData
     );
-    console.log(response.data.token);
-    return response.data;
+    return response.data.token;
   } catch (error) {
     if (error.response && error.response.status === 400) {
       throw new Error("User already signed up. Please log in.");
@@ -23,14 +22,11 @@ async function signInUser(userData) {
       "http://localhost:8080/v1/auth/signin",
       userData
     );
-    console.log(response.data.token);
-    return response.data;
+    return response.data.token;
   } catch (error) {
     if (error.response && error.response.status === 401) {
-      throw new Error("Invalid credentials. Please try again.");
+       throw new Error("Invalid credentials Please try again");
     }
-    console.error("Error signing in:", error);
-    throw error;
   }
 }
 

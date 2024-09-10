@@ -35,7 +35,7 @@ function Products() {
     <div className="mb-40">
       <RecentlyAdded recentProducts={recentProducts} />
       <Filter />
-
+      
       {/* Product list */}
       <ListOfProduct />
 

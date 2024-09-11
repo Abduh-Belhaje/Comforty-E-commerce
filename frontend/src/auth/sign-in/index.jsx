@@ -24,7 +24,6 @@ function SignInPage() {
     try {
       const response = await signInUser({email,password});
       window.localStorage.setItem("access-token",response);
-
       window.location.href = "/"
     } catch (error) {
       setAlterMsg("Invalid credentials Please try again")

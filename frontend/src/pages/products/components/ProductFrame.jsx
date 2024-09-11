@@ -69,8 +69,8 @@ function ProductFrame(props) {
                   </div>
 
                   <div className="absolute top-2 left-2">
-                    <p className="text-xs font-semibold bg-green-100 text-green-800 rounded-full px-2 py-1">
-                      {props.product.status}
+                    <p className={`text-xs font-semibold  ${props.product.status == "NEW" && "bg-green-100 text-green-800"}  rounded-full px-2 py-1`}>
+                      {props.product.status ==! "AVAILABLE" && props.product.status}
                     </p>{" "}
                     {/* Added status display */}
                   </div>

@@ -1,20 +1,13 @@
-import React from "react";
-import SLiderSection from "./components/products-slider";
-import RecentlyAdded from "../products/components/RecentlyAdded";
-import CategoriesSection from "./components/products-slider/components/CategoriesSection";
+
+import { useUser } from '@clerk/clerk-react';
+import React from 'react'
 
 export default function Home() {
-  return (
-    <div className="container">
-      {/* Products SLider */}
-      <SLiderSection />
-      {/* Sponsor */}
-      {/* Recently Products */}
-      {/* <RecentlyAdded /> cmp */}
-      {/* Categories */}
-      <CategoriesSection />
 
-      {/* Testimonials */}
-    </div>
-  );
+  
+
+  return (
+    <div>Home</div>
+  )
+
 }

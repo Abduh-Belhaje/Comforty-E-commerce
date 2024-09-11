@@ -50,6 +50,19 @@ export async function getChairsByCategory(category) {
     return { success: false, message: "Failed to fetch products by category." }; // Return a meaningful error message
   }
 }
+export async function getChairDetails(name) {
+  try {
+    const response = await axios.get(
+      `http://localhost:8080/v1/product/${name}`
+    );
+    return response.data;
+
+    // return response.data; // Return the data from the response
+  } catch (error) {
+    console.error("Error fetching product details:", error); // Log the error
+    return { success: false, message: "Error fetching product details" }; // Return a meaningful error message
+  }
+}
 
 // /v1/product/nbOfChairs
 
@@ -57,6 +70,18 @@ export async function nbOfChairs() {
   try {
     const response = await axios.get(
       "http://localhost:8080/v1/product/nbOfChairs"
+    );
+    return response.data; // Ensure this is the expected data structure
+  } catch (error) {
+    console.error("Error fetching product categories:", error);
+    return { success: false, message: "Failed to fetch product categories." };
+  }
+}
+
+export async function getChairReviews(name) {
+  try {
+    const response = await axios.get(
+      `http://localhost:8080/v1/reviews/${name}`
     );
     return response.data; // Ensure this is the expected data structure
   } catch (error) {

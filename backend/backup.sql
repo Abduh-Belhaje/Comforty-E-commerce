@@ -1,167 +1,9 @@
 --
--- PostgreSQL database cluster dump
---
-
-SET default_transaction_read_only = off;
-
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-
---
--- Drop databases (except postgres and template1)
---
-
-DROP DATABASE "comfortyDB";
-
-
-
-
---
--- Drop roles
---
-
-DROP ROLE postgres;
-
-
---
--- Roles
---
-
-CREATE ROLE postgres;
-ALTER ROLE postgres WITH SUPERUSER INHERIT CREATEROLE CREATEDB LOGIN REPLICATION BYPASSRLS PASSWORD 'SCRAM-SHA-256$4096:D8+3qK+pI4x4/xcsjkC4pA==$ri9KsPvjyJIZgZ897w2RbS+t2fh+yBp/a9m+K1I5pHo=:LC/B67KvFdSY29i3luzWJD8eJ47xGcm1lOEJ+N01bNU=';
-
---
--- User Configurations
---
-
-
-
-
-
-
-
-
---
--- Databases
---
-
---
--- Database "template1" dump
---
-
---
 -- PostgreSQL database dump
 --
 
 -- Dumped from database version 16.4 (Debian 16.4-1.pgdg120+1)
 -- Dumped by pg_dump version 16.4 (Debian 16.4-1.pgdg120+1)
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
-UPDATE pg_catalog.pg_database SET datistemplate = false WHERE datname = 'template1';
-DROP DATABASE template1;
---
--- Name: template1; Type: DATABASE; Schema: -; Owner: postgres
---
-
-CREATE DATABASE template1 WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'en_US.utf8';
-
-
-ALTER DATABASE template1 OWNER TO postgres;
-
-\connect template1
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
--- Name: DATABASE template1; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON DATABASE template1 IS 'default template for new databases';
-
-
---
--- Name: template1; Type: DATABASE PROPERTIES; Schema: -; Owner: postgres
---
-
-ALTER DATABASE template1 IS_TEMPLATE = true;
-
-
-\connect template1
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
--- Name: DATABASE template1; Type: ACL; Schema: -; Owner: postgres
---
-
-REVOKE CONNECT,TEMPORARY ON DATABASE template1 FROM PUBLIC;
-GRANT CONNECT ON DATABASE template1 TO PUBLIC;
-
-
---
--- PostgreSQL database dump complete
---
-
---
--- Database "comfortyDB" dump
---
-
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 16.4 (Debian 16.4-1.pgdg120+1)
--- Dumped by pg_dump version 16.4 (Debian 16.4-1.pgdg120+1)
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
--- Name: comfortyDB; Type: DATABASE; Schema: -; Owner: postgres
---
-
-CREATE DATABASE "comfortyDB" WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'en_US.utf8';
-
-
-ALTER DATABASE "comfortyDB" OWNER TO postgres;
-
-\connect "comfortyDB"
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -238,6 +80,65 @@ CREATE TYPE catalog.chairs_type AS (
 ALTER TYPE catalog.chairs_type OWNER TO postgres;
 
 --
+-- Name: add_new_review(character varying, character varying, integer, character varying); Type: PROCEDURE; Schema: catalog; Owner: postgres
+--
+
+CREATE PROCEDURE catalog.add_new_review(IN useremail character varying, IN chairname character varying, IN rate integer, IN cmt character varying)
+    LANGUAGE plpgsql
+    AS $$ 
+DECLARE
+    userID INT;
+    chairID INT;
+BEGIN
+    -- Fetch the user ID from the users table
+    SELECT id INTO userID FROM accounts.users WHERE email = userEmail;
+    
+    -- Fetch the chair ID from the chairs table using chairName
+    SELECT chair_id INTO chairID FROM catalog.chairs WHERE name = chairName;
+    
+    -- Insert a new review into the reviews table
+    INSERT INTO catalog.reviews (user_id, chair_id, rating, comment, created_at)
+    VALUES (userID, chairID, rate, cmt, NOW());
+
+EXCEPTION
+    -- Catch 'no data found' for users or chairs
+    WHEN NO_DATA_FOUND THEN
+        RAISE EXCEPTION 'No data found. User with email: % or Chair with name: % does not exist', userEmail, chairName;
+        
+    -- Catch unique violation error (e.g., duplicate reviews)
+    WHEN UNIQUE_VIOLATION THEN
+        RAISE EXCEPTION 'A review by this user for this chair already exists';
+
+    -- Generic catch for other errors, but provide more context
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Operation failed. Error: %', SQLERRM;
+END; $$;
+
+
+ALTER PROCEDURE catalog.add_new_review(IN useremail character varying, IN chairname character varying, IN rate integer, IN cmt character varying) OWNER TO postgres;
+
+--
+-- Name: change_chair_status(); Type: PROCEDURE; Schema: catalog; Owner: postgres
+--
+
+CREATE PROCEDURE catalog.change_chair_status()
+    LANGUAGE plpgsql
+    AS $$ 
+DECLARE
+	rec RECORD;
+BEGIN
+	FOR rec IN SELECT chair_id , status ,created_at  FROM catalog.chairs 
+	LOOP
+		IF rec.status = 'NEW' AND EXTRACT(day FROM AGE(NOW(), rec.created_at)) > 3 THEN
+			UPDATE catalog.chairs SET status = 'AVAILABLE' WHERE chair_id = rec.chair_id;
+		END IF;
+	END LOOP;
+END; $$;
+
+
+ALTER PROCEDURE catalog.change_chair_status() OWNER TO postgres;
+
+--
 -- Name: get_chair_info(character varying); Type: FUNCTION; Schema: catalog; Owner: postgres
 --
 
@@ -248,11 +149,11 @@ BEGIN
 
 	RETURN QUERY
 	SELECT C.name,C.description,C.status,C.color,C.height,
-			C.weight,C.discount , I.image_url, C.price,C.width ,R.rate
+			C.weight,C.discount , I.image_url, C.price,C.width , COALESCE(R.rate,0)
 	FROM catalog.chairs C
 	INNER JOIN catalog.images I
 	ON C.name = I.name 
-	INNER JOIN (
+	LEFT JOIN (
 		SELECT chair_id , ROUND(AVG(rating)) AS rate FROM catalog.reviews GROUP BY chair_id
 	) R
 	ON C.chair_id = R.chair_id
@@ -554,7 +455,7 @@ ALTER SEQUENCE catalog.review_seq OWNER TO postgres;
 --
 
 CREATE TABLE catalog.reviews (
-    review_id bigint NOT NULL,
+    review_id bigint DEFAULT nextval('catalog.review_seq'::regclass) NOT NULL,
     chair_id integer NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     rating integer NOT NULL,
@@ -698,8 +599,6 @@ COPY accounts.users (id, created_at, email, first_name, last_name, password, rol
 1	2024-09-09 12:47:07.717	abdo@gmail.com	abdo	belhaje	$2a$10$cAM9U6uWKO8RaAv3MXPmIuieTeAuoTDkT/V2fLXGz4DECpsXTEfqC	CUSTOMER
 2	2024-09-09 13:23:22.881	ali@gmail.com	ali	ouarigh	$2a$10$Et359.CL5jFkBnwCcTNYNurmHwNyxqvmMjjkw7onCcUMyzVRUYC.C	CUSTOMER
 3	2024-09-09 13:23:34.933	reda@gmail.com	reda	lamiini	$2a$10$wdGsUHAvPvxl5DqZJkMkbOzJsdi6jHbusHq46Sh9QLYcUJ8dRvV.K	CUSTOMER
-4	2024-09-09 18:56:10.608	ilyas@gmail.com	ilyas	akhoumach	$2a$10$D6f.wNvK4tG8tD9FudZHcOmYcGgPK/4Xm0E1RPIzLpyhPbvEj4mGm	CUSTOMER
-5	2024-09-09 18:59:22.844	anouar@gmail.com	anouar	ferras	$2a$10$Txf9Pgp8E86P/WopvilUeO.8Fs5hdijxhaj5Z0HA0i4TpsCsnjfVm	CUSTOMER
 \.
 
 
@@ -721,12 +620,12 @@ COPY catalog.categories (ctg_id, created_at, description, name) FROM stdin;
 --
 
 COPY catalog.chairs (chair_id, color, created_at, ctg_id, description, discount, height, name, status, weight, price, width) FROM stdin;
-1	Black	2024-09-03 23:44:14.829	1	Designed to provide comfort and support for long hours of work.	0	107 cm	Ergonomic Chair	NEW	59 cm	300	42 cm
-4	Sky Blue	2024-09-04 14:51:07.517	1	Simple, often smaller chairs meant for short-duration tasks or as general-purpose office seating.	0	107 cm	Task Chairs	NEW	59 cm	300	42 cm
-6	Green	2024-09-04 15:01:30.834	4	Portable, foldable chairs suitable for camping and outdoor activities.	0	107 cm	Camping Chairs	NEW	59 cm	300	42 cm
-2	Velvet Dark Grey	2024-09-03 23:57:38.092	4	 Chairs that recline backward and often have a footrest, providing maximum relaxation.	0	107 cm	Recliners Chair	NEW	59 cm	470	45 cm
-3	Light Grey	2024-09-04 13:30:31.041	1	Luxurious chairs often made from leather and designed for high-level executives.	0	107 cm	Executive Chairs	NEW	59 cm	350	45 cm
-5	Padded Textilene Gray	2024-09-04 14:56:45.033	4	Chairs designed specifically for outdoor use, often made from weather-resistant materials.	0	107 cm	Patio Chairs	NEW	59 cm	400	45 cm
+1	Black	2024-09-03 23:44:14.829	1	Designed to provide comfort and support for long hours of work.	0	107 cm	Ergonomic Chair	AVAILABLE	59 cm	300	42 cm
+4	Sky Blue	2024-09-04 14:51:07.517	1	Simple, often smaller chairs meant for short-duration tasks or as general-purpose office seating.	0	107 cm	Task Chairs	AVAILABLE	59 cm	300	42 cm
+6	Green	2024-09-04 15:01:30.834	4	Portable, foldable chairs suitable for camping and outdoor activities.	0	107 cm	Camping Chairs	AVAILABLE	59 cm	300	42 cm
+2	Velvet Dark Grey	2024-09-03 23:57:38.092	4	 Chairs that recline backward and often have a footrest, providing maximum relaxation.	0	107 cm	Recliners Chair	AVAILABLE	59 cm	470	45 cm
+3	Light Grey	2024-09-04 13:30:31.041	1	Luxurious chairs often made from leather and designed for high-level executives.	0	107 cm	Executive Chairs	AVAILABLE	59 cm	350	45 cm
+5	Padded Textilene Gray	2024-09-04 14:56:45.033	4	Chairs designed specifically for outdoor use, often made from weather-resistant materials.	0	107 cm	Patio Chairs	AVAILABLE	59 cm	400	45 cm
 \.
 
 
@@ -766,14 +665,16 @@ COPY catalog.reviews (review_id, chair_id, created_at, rating, user_id, comment)
 1	1	2024-09-06 21:59:49.262296	4	1	This icon pack is just what I need for my latest project. There s an icon for just about anything I could ever need. Love the playful look!
 2	2	2024-09-06 22:00:09.782505	4	1	This icon pack is just what I need for my latest project. There s an icon for just about anything I could ever need. Love the playful look!
 3	3	2024-09-06 22:00:29.04378	5	1	This icon pack is just what I need for my latest project. There s an icon for just about anything I could ever need. Love the playful look!
-4	4	2024-09-06 22:00:37.42053	5	1	This icon pack is just what I need for my latest project. There s an icon for just about anything I could ever need. Love the playful look!
-5	5	2024-09-06 22:00:44.905567	5	1	This icon pack is just what I need for my latest project. There s an icon for just about anything I could ever need. Love the playful look!
-6	6	2024-09-06 22:01:53.208799	3	2	Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so its a steal at this price.
-7	5	2024-09-06 22:02:00.491135	3	2	Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so its a steal at this price.
-8	1	2024-09-06 22:02:11.464683	3	2	Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so its a steal at this price.
-9	2	2024-09-06 22:02:18.856574	3	2	Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so its a steal at this price.
-10	2	2024-09-06 22:02:30.86453	4	3	Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so its a steal at this price.
-11	1	2024-09-06 22:02:39.18618	4	3	Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so its a steal at this price.
+5	4	2024-09-09 20:49:43.254175	4	3	I m not really impressive with its design . he could be better then that
+6	1	2024-09-10 13:31:08.634675	3	2	Lovely Chair !
+7	4	2024-09-10 13:36:49.302147	4	2	Its a usefull chair with a good quality .
+11	5	2024-09-10 16:58:19.138932	5	1	llllll
+12	6	2024-09-10 17:49:11.598407	4	1	hhhh
+13	4	2024-09-10 17:50:22.202946	3	1	 l like it
+14	2	2024-09-10 17:51:56.956585	3	1	lovely chair
+15	5	2024-09-10 18:14:13.839782	4	1	I like it
+48	6	2024-09-10 18:31:53.877545	2	3	I don't like because I don't trip !
+49	3	2024-09-10 18:32:39.14562	4	3	I like it
 \.
 
 
@@ -856,7 +757,7 @@ SELECT pg_catalog.setval('catalog.image_seq', 20, true);
 -- Name: review_seq; Type: SEQUENCE SET; Schema: catalog; Owner: postgres
 --
 
-SELECT pg_catalog.setval('catalog.review_seq', 1, false);
+SELECT pg_catalog.setval('catalog.review_seq', 49, true);
 
 
 --
@@ -993,65 +894,5 @@ CREATE INDEX idx_chairs_name ON catalog.chairs USING btree (name);
 
 --
 -- PostgreSQL database dump complete
---
-
---
--- Database "postgres" dump
---
-
---
--- PostgreSQL database dump
---
-
--- Dumped from database version 16.4 (Debian 16.4-1.pgdg120+1)
--- Dumped by pg_dump version 16.4 (Debian 16.4-1.pgdg120+1)
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
-DROP DATABASE postgres;
---
--- Name: postgres; Type: DATABASE; Schema: -; Owner: postgres
---
-
-CREATE DATABASE postgres WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'en_US.utf8';
-
-
-ALTER DATABASE postgres OWNER TO postgres;
-
-\connect postgres
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
---
--- Name: DATABASE postgres; Type: COMMENT; Schema: -; Owner: postgres
---
-
-COMMENT ON DATABASE postgres IS 'default administrative connection database';
-
-
---
--- PostgreSQL database dump complete
---
-
---
--- PostgreSQL database cluster dump complete
 --
 

@@ -27,9 +27,15 @@ import {
 import { Rating } from "@mui/material";
 import {
   getChairDetails,
-  getChairReviews
+  getChairReviews,
+  addReview,
 } from "../../../../services/productsService";
-import Inconnu from "../../../../../public/Inconnu.jpg"
+import Inconnu from "../../../../../public/inconnu.jpg";
+import {
+  SuccessAlert,
+  WaringAlert,
+} from "../../../../components/ui/alert-dialog";
+import { extractEmail } from "../../../../lib/utils";
 
 const faqs = [
   {
@@ -80,96 +86,136 @@ function classNames(...classes) {
 
 export default function ProductPage() {
   const [isReviewOpen, setIsReviewOpen] = useState(false);
-  const [reviewText, setReviewText] = useState("");
-  const [reviewRating, setReviewRating] = useState(0);
-  const [selectedImg,setSelectedImg] = useState()
-  const [product,setProduct] = useState()
-  const [reviews,setReviews] = useState()
-  const [highlights,setHighlights] = useState({Color : "Gray",Height : "107 cm", Width : "58 cm",Weight : "20 Kg"})
+  const [comment, setcomment] = useState("");
+  const [rating, setrating] = useState(0);
+  const [selectedImg, setSelectedImg] = useState();
+  const [product, setProduct] = useState();
+  const [reviews, setReviews] = useState();
+  const [highlights, setHighlights] = useState({
+    Color: "Gray",
+    Height: "107 cm",
+    Width: "58 cm",
+    Weight: "20 Kg",
+  });
+  const [alertMsg, setAlterMsg] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [successAlert, setShowSuccess] = useState(false);
   const openReviewModal = () => setIsReviewOpen(true);
   const closeReviewModal = () => setIsReviewOpen(false);
-  const submitReview = () => {
-    // Handle review submission here (e.g., save to the server)
-    console.log("Review submitted:", reviewText, reviewRating);
+
+  const submitReview = async () => {
+    const email = extractEmail();
+    if (email) {
+      const response = await addReview({
+        email: email,
+        name: product.name,
+        rating,
+        comment,
+      });
+      if (response.success) {
+        setAlterMsg("Review added successfully");
+        setShowSuccess(true);
+        setTimeout(() => {
+          setShowSuccess(false);
+        }, 2500);
+      } else {
+        setAlterMsg(response.message);
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 2500);
+      }
+    } else {
+      setAlterMsg("User not authenticated !");
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 2500);
+    }
     closeReviewModal();
   };
 
-
-
-  useEffect(()=>{
-    const path =  window.location.href.split("/")
+  useEffect(() => {
+    const path = window.location.href.split("/");
     const name = decodeURIComponent(path[4]);
     const fetchChairDetaild = async () => {
-      const response = await getChairDetails(name)
-      setProduct(response)
-    }
+      const response = await getChairDetails(name);
+      setProduct(response);
+    };
 
-    const fetchChairReviews = async () =>{
-      const response = await getChairReviews(name)
-      setReviews(response)
-    }
-    fetchChairDetaild()
-    fetchChairReviews()
-    
-  },[])
+    const fetchChairReviews = async () => {
+      const response = await getChairReviews(name);
+      setReviews(response);
+    };
+    fetchChairDetaild();
+    fetchChairReviews();
+  }, []);
 
-
-  useEffect(()=>{
-    if(product){
-      setSelectedImg(product.images[0])
-      setHighlights({Color : product.color,Height : product.height, Width : product.width,Weight : product.weight})
+  useEffect(() => {
+    if (product) {
+      setSelectedImg(product.images[0]);
+      setHighlights({
+        Color: product.color,
+        Height: product.height,
+        Width: product.width,
+        Weight: product.weight,
+      });
     }
-  },[product])
+  }, [product]);
+
   return (
     <div className="bg-white border mb-24">
+      {showAlert && <WaringAlert msg={alertMsg} />}
+      {successAlert && <SuccessAlert msg={alertMsg} />}
       <div className="mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         {/* Product */}
         <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
           {/* Product image */}
           <div className="lg:col-span-4 lg:row-end-1">
             <div className="aspect-h-3 aspect-w-4 overflow-hidden rounded-lg flex justify-center">
-              <img
-                src={selectedImg}
-                className="object-cover w-3/5 "
-              />
+              <img src={selectedImg} className="object-cover w-3/5 " />
             </div>
             <div className=" py-12 flex">
-              {
-                product && product.images.map((image,index) => (
-                  image != selectedImg && 
-                  <img 
-                    key={index} 
-                    src={image} 
-                    onClick={()=> setSelectedImg(product.images[index])}
-                    className="lg:w-32 w-28 border rounded p-5 ml-5" />
-                ))
-              }
-
+              {product &&
+                product.images.map(
+                  (image, index) =>
+                    image != selectedImg && (
+                      <img
+                        key={index}
+                        src={image}
+                        onClick={() => setSelectedImg(product.images[index])}
+                        className="lg:w-32 w-28 border rounded p-5 ml-5"
+                      />
+                    )
+                )}
             </div>
           </div>
 
           {/* Product details */}
           <div className="mx-auto max-w-2xl sm:mt-16 lg:col-span-3 lg:row-span-2 lg:row-end-2 lg:mt-0 lg:max-w-none ">
             <div className="flex flex-col-reverse">
-            <div>
+              <div>
                 <h3 className="sr-only">Reviews</h3>
-               <div className="flex py-3 items-center">
-                <span className="pr-10 text-xl font-extrabold text-green-700">${product && product.price}</span>
-                <div className="flex items-center">
-                {[1, 2, 3, 4, 5].map((rating) => (
-                      <StarIcon
-                        key={rating}
-                        className={classNames(
-                           product && product.rate >= rating
-                            ? "text-yellow-400"
-                            : "text-gray-300",
-                          "h-5 w-5 flex-shrink-0"
-                        )}
-                        aria-hidden="true"
-                      />
-                    ))}
+                <div className="flex py-3 items-center">
+                  <span className="pr-10 text-xl font-extrabold text-green-700">
+                    ${product && product.price}
+                  </span>
+                  <div className="flex items-center">
+                    {product &&
+                      [1, 2, 3, 4, 5].map((rating) => (
+                        <StarIcon
+                          key={rating}
+                          className={classNames(
+                            product.rate >= rating
+                              ? "text-yellow-400"
+                              : "text-gray-300",
+                            "h-5 w-5 flex-shrink-0"
+                          )}
+                          aria-hidden="true"
+                        />
+                      ))}
                   </div>
-               </div>
+                </div>
               </div>
               <div className="">
                 <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
@@ -182,12 +228,16 @@ export default function ProductPage() {
               </div>
             </div>
 
-            <p className="py-1 text-gray-500">{product && product.description}</p>
+            <p className="py-1 text-gray-500">
+              {product && product.description}
+            </p>
 
             <div className="py-5 flex flex-col">
-            {Object.entries(highlights).map(([key, value]) => (
-              <span className="text-gray-500 py-1" key={key}>{key} : {value}</span>
-            ))}
+              {Object.entries(highlights).map(([key, value]) => (
+                <span className="text-gray-500 py-1" key={key}>
+                  {key} : {value}
+                </span>
+              ))}
             </div>
 
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
@@ -338,17 +388,17 @@ export default function ProductPage() {
                           <div className="mt-4">
                             <Rating
                               name="review-rating"
-                              value={reviewRating}
+                              value={rating}
                               onChange={(event, newValue) =>
-                                setReviewRating(newValue)
+                                setrating(parseInt(newValue))
                               }
                               precision={0.5}
                               size="large"
                               className="text-yellow-400"
                             />
                             <textarea
-                              value={reviewText}
-                              onChange={(e) => setReviewText(e.target.value)}
+                              value={comment}
+                              onChange={(e) => setcomment(e.target.value)}
                               rows="4"
                               className="mt-4 outline-none block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                               placeholder="Write your review here..."
@@ -375,56 +425,59 @@ export default function ProductPage() {
                     </Dialog>
                   </Transition>
 
-                  {reviews && reviews.map((review, reviewIdx) => (
-                    <div
-                      key={review.first_name}
-                      className="flex space-x-4 text-sm text-gray-500"
-                    >
-                      <div className="flex-none py-10">
-                        <img
-                          src={review.pictur_url ? review.pictur_url  : Inconnu}
-                          alt=""
-                          className="h-10 w-10 rounded-full bg-gray-100"
-                        />
-                      </div>
+                  {reviews &&
+                    reviews.map((review, reviewIdx) => (
                       <div
-                        className={classNames(
-                          reviewIdx === 0 ? "" : "border-t border-gray-200",
-                          "py-10"
-                        )}
+                        key={review.first_name}
+                        className="flex space-x-4 text-sm text-gray-500"
                       >
-                        <h3 className="font-medium text-gray-900">
-                          {review.first_name} {review.last_name}
-                        </h3>
-                        <p>
-                          <time dateTime="22-08-2014">22-08-2014</time>
-                        </p>
-
-                        <div className="mt-4 flex items-center">
-                          {[1,2, 3, 4,5].map((rating) => (
-                            <StarIcon
-                              key={rating}
-                              className={classNames(
-                                review.rate >= rating
-                                  ? "text-yellow-400"
-                                  : "text-gray-300",
-                                "h-5 w-5 flex-shrink-0"
-                              )}
-                              aria-hidden="true"
-                            />
-                          ))}
+                        <div className="flex-none py-10">
+                          <img
+                            src={
+                              review.pictur_url ? review.pictur_url : Inconnu
+                            }
+                            alt=""
+                            className="h-10 w-10 rounded-full bg-gray-100"
+                          />
                         </div>
-                        <p className="sr-only">
-                          {review.rate} out of 5 stars
-                        </p>
-
                         <div
-                          className="prose prose-sm mt-4 max-w-none text-gray-500"
-                          dangerouslySetInnerHTML={{ __html: review.comment }}
-                        />
+                          className={classNames(
+                            reviewIdx === 0 ? "" : "border-t border-gray-200",
+                            "py-10"
+                          )}
+                        >
+                          <h3 className="font-medium text-gray-900">
+                            {review.first_name} {review.last_name}
+                          </h3>
+                          <p>
+                            <time dateTime="22-08-2014">22-08-2014</time>
+                          </p>
+
+                          <div className="mt-4 flex items-center">
+                            {[1, 2, 3, 4, 5].map((rating) => (
+                              <StarIcon
+                                key={rating}
+                                className={classNames(
+                                  review.rate >= rating
+                                    ? "text-yellow-400"
+                                    : "text-gray-300",
+                                  "h-5 w-5 flex-shrink-0"
+                                )}
+                                aria-hidden="true"
+                              />
+                            ))}
+                          </div>
+                          <p className="sr-only">
+                            {review.rate} out of 5 stars
+                          </p>
+
+                          <div
+                            className="prose prose-sm mt-4 max-w-none text-gray-500"
+                            dangerouslySetInnerHTML={{ __html: review.comment }}
+                          />
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
                 </TabPanel>
 
                 <TabPanel className="text-sm text-gray-500">
@@ -456,7 +509,7 @@ export default function ProductPage() {
             </TabGroup>
           </div>
         </div>
-      </div> 
+      </div>
     </div>
   );
 }

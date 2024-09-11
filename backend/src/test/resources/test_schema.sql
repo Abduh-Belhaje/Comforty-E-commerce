@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS accounts.users (
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     role VARCHAR(255),
-    email VARCHAR(255) UNIQUE
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255) UNIQUE
 );
 
 

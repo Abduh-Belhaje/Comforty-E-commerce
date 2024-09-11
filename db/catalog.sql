@@ -77,11 +77,11 @@ BEGIN
 
 	RETURN QUERY
 	SELECT C.name,C.description,C.status,C.color,C.height,
-			C.weight,C.discount , I.image_url, C.price,C.width ,R.rate
+			C.weight,C.discount , I.image_url, C.price,C.width , COALESCE(R.rate,0)
 	FROM catalog.chairs C
 	INNER JOIN catalog.images I
 	ON C.name = I.name 
-	INNER JOIN (
+	LEFT JOIN (
 		SELECT chair_id , ROUND(AVG(rating)) AS rate FROM catalog.reviews GROUP BY chair_id
 	) R
 	ON C.chair_id = R.chair_id
@@ -91,8 +91,9 @@ END;
 $$ LANGUAGE plpgsql
 
 
-select * from catalog.get_Chair_info('Patio%20Chairs')
-
+select * from catalog.get_Chair_info('Camping Chairs')
+select * from catalog.reviews;
+DELETE from catalog.reviews where review_id = 9;
 
 -------------
 ---------------- Func to Fetch chairs by category

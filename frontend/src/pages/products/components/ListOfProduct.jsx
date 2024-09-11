@@ -20,6 +20,7 @@ export default function ListOfProduct() {
 
   useEffect(() => {
     if (selectedCategory) {
+      //
     }
   }, []);
   // Check if a product is in the watchlist

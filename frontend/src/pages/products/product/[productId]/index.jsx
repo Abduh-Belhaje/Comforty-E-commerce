@@ -27,9 +27,12 @@ import {
 import { Rating } from "@mui/material";
 import {
   getChairDetails,
-  getChairReviews
+  getChairReviews,
+  addReview
 } from "../../../../services/productsService";
 import Inconnu from "../../../../../public/Inconnu.jpg"
+import { SuccessAlert, WaringAlert } from "../../../../components/ui/alert-dialog";
+import { extractEmail } from "../../../../lib/utils";
 
 const faqs = [
   {
@@ -80,19 +83,49 @@ function classNames(...classes) {
 
 export default function ProductPage() {
   const [isReviewOpen, setIsReviewOpen] = useState(false);
-  const [reviewText, setReviewText] = useState("");
-  const [reviewRating, setReviewRating] = useState(0);
+  const [comment, setcomment] = useState("");
+  const [rating, setrating] = useState(0);
   const [selectedImg,setSelectedImg] = useState()
   const [product,setProduct] = useState()
   const [reviews,setReviews] = useState()
   const [highlights,setHighlights] = useState({Color : "Gray",Height : "107 cm", Width : "58 cm",Weight : "20 Kg"})
+  const [alertMsg,setAlterMsg] = useState("");
+  const [showAlert,setShowAlert] = useState(false);
+  const [successAlert,setShowSuccess] = useState(false);
   const openReviewModal = () => setIsReviewOpen(true);
   const closeReviewModal = () => setIsReviewOpen(false);
-  const submitReview = () => {
-    // Handle review submission here (e.g., save to the server)
-    console.log("Review submitted:", reviewText, reviewRating);
-    closeReviewModal();
-  };
+
+
+
+
+  const submitReview = async () => {
+    const email = extractEmail();
+    if(email){
+      const response = await addReview({ email: email, name: product.name, rating, comment });
+      if(response.success){
+        setAlterMsg("Review added successfully")
+        setShowSuccess(true)
+        setTimeout(()=>{
+          setShowSuccess(false)
+          },2500)
+      }else{
+        setAlterMsg(response.message)
+        setShowAlert(true)
+        setTimeout(()=>{
+          setShowAlert(false)
+          },2500)
+      }
+    }else{
+      setAlterMsg("User not authenticated !")
+        setShowAlert(true)
+        setTimeout(()=>{
+          setShowAlert(false)
+          },2500)
+        
+      }
+      closeReviewModal()
+    }
+    
 
 
 
@@ -120,8 +153,12 @@ export default function ProductPage() {
       setHighlights({Color : product.color,Height : product.height, Width : product.width,Weight : product.weight})
     }
   },[product])
+
+
   return (
     <div className="bg-white border mb-24">
+      { showAlert && <WaringAlert msg={alertMsg} />}
+      { successAlert && <SuccessAlert msg={alertMsg} />}
       <div className="mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         {/* Product */}
         <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
@@ -156,11 +193,11 @@ export default function ProductPage() {
                <div className="flex py-3 items-center">
                 <span className="pr-10 text-xl font-extrabold text-green-700">${product && product.price}</span>
                 <div className="flex items-center">
-                {[1, 2, 3, 4, 5].map((rating) => (
+                {product && [1, 2, 3, 4, 5].map((rating) => (
                       <StarIcon
                         key={rating}
                         className={classNames(
-                           product && product.rate >= rating
+                            product.rate >= rating
                             ? "text-yellow-400"
                             : "text-gray-300",
                           "h-5 w-5 flex-shrink-0"
@@ -338,17 +375,17 @@ export default function ProductPage() {
                           <div className="mt-4">
                             <Rating
                               name="review-rating"
-                              value={reviewRating}
+                              value={rating}
                               onChange={(event, newValue) =>
-                                setReviewRating(newValue)
+                                setrating(parseInt(newValue))
                               }
                               precision={0.5}
                               size="large"
                               className="text-yellow-400"
                             />
                             <textarea
-                              value={reviewText}
-                              onChange={(e) => setReviewText(e.target.value)}
+                              value={comment}
+                              onChange={(e) => setcomment(e.target.value)}
                               rows="4"
                               className="mt-4 outline-none block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                               placeholder="Write your review here..."

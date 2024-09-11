@@ -10,4 +10,13 @@ const WaringAlert = (props) => {
   )
 }
 
-export {WaringAlert};
+const SuccessAlert = (props) => {
+
+  return (
+    <Alert severity="success"  className="fixed right-5 bottom-5">
+      {props.msg}   
+    </Alert>
+  )
+}
+
+export {WaringAlert,SuccessAlert};

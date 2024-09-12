@@ -23,7 +23,7 @@ function Header() {
   const location = useLocation();
 
   const isActive = (path) => location.pathname === path;
-  const { watchlist, removeFromWatchlist, bag, removeFromBag, calculateTotal } =
+  const { watchlist, removeFromWatchlist, bag, removeFromBag } =
     useProductContext();
 
   return (
@@ -194,7 +194,10 @@ function Header() {
                         key={item.name}
                         className="flex items-center justify-between p-3 border-b border-gray-200 rounded-lg  bg-white"
                       >
-                        <div className="flex items-center space-x-3">
+                        <Link
+                          to={`/products/${item.name}`}
+                          className="flex items-center space-x-3"
+                        >
                           <img
                             src={item.image_url}
                             alt={item.name}
@@ -208,9 +211,9 @@ function Header() {
                               ${item.price.toFixed(2)}
                             </p>
                           </div>
-                        </div>
+                        </Link>
                         <button
-                          onClick={() => removeFromCart(item.name)} // Make sure to implement removeFromCart function
+                          onClick={() => removeFromBag(item.name)} // Make sure to implement removeFromCart function
                           className="text-sm font-medium text-red-600 hover:text-red-800"
                         >
                           Remove
@@ -219,12 +222,12 @@ function Header() {
                     ))}
                   </ul>
                   <div className="mt-4 flex justify-between items-center border-t border-gray-200 pt-4">
-                    <p className="text-lg font-semibold text-gray-900">
-                      Total: ${calculateTotal().toFixed(2)}
-                    </p>
-                    <Button className="bg-indigo-600 text-white hover:bg-indigo-700 rounded-md px-4 py-2">
+                    <Link
+                      to="/order"
+                      className="bg-indigo-600 text-white hover:bg-indigo-700 rounded-md px-4 py-2"
+                    >
                       Order Now
-                    </Button>
+                    </Link>
                   </div>
                 </div>
               ) : (

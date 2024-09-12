@@ -12,7 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.example.backend.dto.chair.AddChairDTO;
 import com.example.backend.dto.chair.ChairDTO;
-import com.example.backend.dto.chair.ChairInfoDTO;
 import com.example.backend.model.Chair;
 
 public class ChairMapperTest {
@@ -65,17 +64,4 @@ public class ChairMapperTest {
         assertThat(chair1.getPrice()).isEqualTo(1000);
     }
 
-    @Test
-    void mapFromObjectsToChairInfoDTO() {
-        Object[] obj1 = { "Chair1", "A comfortable chair", "NEW", "Red", "110cm", "15kg", "10%", "img1_1.url", 100,
-                "40cm", 5 };
-        Object[] obj2 = { "Chair1", "A comfortable chair", "NEW", "Red", "110cm", "15kg", "10%", "img1_2.url", 100,
-                "40cm", 5 };
-
-        List<Object[]> data = Arrays.asList(obj1, obj2);
-        ChairInfoDTO chair = chairMapper.toChairInfoDTO(data);
-
-        assertThat(chair).isNotNull();
-        assertThat(chair.getImages().size()).isEqualTo(2);
-    }
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useProductContext } from "../../../contexte/ProductContext"; // Adjust the import path as necessary
-import ProductFrame from "./productFrame";
+import ProductFrame from "./ProductFrame";
 
 export default function ListOfProduct() {
   const {

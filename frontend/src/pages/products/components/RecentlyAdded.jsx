@@ -1,9 +1,9 @@
 import React from "react";
 import { useProductContext } from "../../../contexte/ProductContext";
-import ProductFrame from "./productFrame";
+import ProductFrame from "./ProductFrame";
 
 function RecentlyAdded() {
-  const { recentProducts} = useProductContext();
+  const { recentProducts } = useProductContext();
 
   return (
     <div className="">

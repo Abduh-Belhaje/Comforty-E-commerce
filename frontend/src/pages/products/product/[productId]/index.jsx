@@ -142,7 +142,7 @@ export default function ProductPage() {
       const response = await getChairDetails(name);
       setProduct(response);
     };
-
+    
     const fetchChairReviews = async () => {
       const response = await getChairReviews(name);
       setReviews(response);

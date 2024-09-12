@@ -85,8 +85,8 @@ export async function getChairReviews(name) {
     );
     return response.data; // Ensure this is the expected data structure
   } catch (error) {
-    console.error("Error fetching product categories:", error);
-    return { success: false, message: "Failed to fetch product categories." };
+    console.error("Error fetching product reviews:", error);
+    return { success: false, message: "Failed to fetch product reviews." };
   }
 }
 

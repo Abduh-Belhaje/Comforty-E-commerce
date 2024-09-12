@@ -11,11 +11,11 @@ import software.amazon.awssdk.services.s3.S3Configuration;
 @Configuration
 public class StorageConfig {
 
-        private String accessKeyID;
+        private String accessKeyID = "AKIA5FTZAVNGZAXJZWE7";
 
-        private String secretKey;
+        private String secretKey = "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";
 
-        private String region;
+        private String region = "us-east-1";
 
         @Bean
         public S3Client s3Client() {

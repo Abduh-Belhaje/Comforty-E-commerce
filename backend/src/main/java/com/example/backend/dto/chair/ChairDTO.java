@@ -15,13 +15,7 @@ public class ChairDTO {
 
     private String status;
 
-    private String color;
-
-    private String height;
-
-    private String weight;
-
-    private String discount;
-
     private String image_url;
+
+    private int price;
 }

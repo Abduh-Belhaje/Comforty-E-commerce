@@ -8,9 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.backend.dto.auth.SignInRequest;
 import com.example.backend.dto.auth.SignUpRequest;
-
 import com.example.backend.exception.EmailAlreadyExistsException;
-import com.example.backend.exception.EmailNotFoundException;
 import com.example.backend.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,7 +31,7 @@ public class AuthController {
 
         try {
             return ResponseEntity.ok(authService.Signin(request));
-        } catch (EmailNotFoundException e) {
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Authentication failed : " + e.getMessage());
         }
 

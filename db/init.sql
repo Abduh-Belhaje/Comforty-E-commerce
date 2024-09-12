@@ -1,3 +1,7 @@
+
+----------------------------------------------------------
+-------------------- Categories Table -------------------
+
 INSERT INTO catalog.categories (ctg_id,name,description,created_at)
 VALUES (1,'Office','Designed to provide comfort and support for long hours of work.',NOW());
 
@@ -14,8 +18,20 @@ INSERT INTO catalog.categories (ctg_id,name,description,created_at)
 VALUES (5,'Living Room ','Chairs designed to support children while studying or doing homework.',NOW());
 
 
--- select * from catalog.categories;
 
--- DELETE FROM catalog.categories WHERE ctg_id IN (1,2,3,4,5)
+
+
+--------------------------------------------------------
+----------------- Reviews Table ------------------------
+
+INSERT INTO accounts.users (id,email,first_name,last_name,role,created_at) 
+VALUES (3,'reda@gmail.com','REDA','LAMINI','CUSTOMER',NOW()) 
+select * from catalog.reviews;
+select * from catalog.chairs;
+select * from accounts.users;
+
+INSERT INTO catalog.reviews (review_id,chair_id,rating,user_id,comment,created_at) 
+VALUES (11,1,4,3,'Blown away by how polished this icon pack is. Everything looks so consistent and each SVG is optimized out of the box so I can use it directly with confidence. It would take me several hours to create a single icon this good, so its a steal at this price.'
+,NOW())
 
 

@@ -5,7 +5,6 @@ import { FilterIcon } from "lucide-react";
 function Filter() {
   const { categories, selectedCategory, setSelectedCategory } =
     useProductContext();
-  console.log(selectedCategory);
 
   return (
     <div className="p-4 border border-gray-300 rounded-lg bg-white shadow-md flex items-center space-x-4">

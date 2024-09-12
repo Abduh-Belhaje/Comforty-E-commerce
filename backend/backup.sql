@@ -55,11 +55,88 @@ CREATE TYPE catalog.chair_info_type AS (
 	height character varying,
 	weight character varying,
 	discount character varying,
-	image_url character varying
+	image_url character varying,
+	price integer,
+	width character varying,
+	rate numeric
 );
 
 
 ALTER TYPE catalog.chair_info_type OWNER TO postgres;
+
+--
+-- Name: chairs_type; Type: TYPE; Schema: catalog; Owner: postgres
+--
+
+CREATE TYPE catalog.chairs_type AS (
+	name character varying,
+	description character varying,
+	status character varying,
+	image_url character varying,
+	price integer
+);
+
+
+ALTER TYPE catalog.chairs_type OWNER TO postgres;
+
+--
+-- Name: add_new_review(character varying, character varying, integer, character varying); Type: PROCEDURE; Schema: catalog; Owner: postgres
+--
+
+CREATE PROCEDURE catalog.add_new_review(IN useremail character varying, IN chairname character varying, IN rate integer, IN cmt character varying)
+    LANGUAGE plpgsql
+    AS $$ 
+DECLARE
+    userID INT;
+    chairID INT;
+BEGIN
+    -- Fetch the user ID from the users table
+    SELECT id INTO userID FROM accounts.users WHERE email = userEmail;
+    
+    -- Fetch the chair ID from the chairs table using chairName
+    SELECT chair_id INTO chairID FROM catalog.chairs WHERE name = chairName;
+    
+    -- Insert a new review into the reviews table
+    INSERT INTO catalog.reviews (user_id, chair_id, rating, comment, created_at)
+    VALUES (userID, chairID, rate, cmt, NOW());
+
+EXCEPTION
+    -- Catch 'no data found' for users or chairs
+    WHEN NO_DATA_FOUND THEN
+        RAISE EXCEPTION 'No data found. User with email: % or Chair with name: % does not exist', userEmail, chairName;
+        
+    -- Catch unique violation error (e.g., duplicate reviews)
+    WHEN UNIQUE_VIOLATION THEN
+        RAISE EXCEPTION 'A review by this user for this chair already exists';
+
+    -- Generic catch for other errors, but provide more context
+    WHEN OTHERS THEN
+        RAISE EXCEPTION 'Operation failed. Error: %', SQLERRM;
+END; $$;
+
+
+ALTER PROCEDURE catalog.add_new_review(IN useremail character varying, IN chairname character varying, IN rate integer, IN cmt character varying) OWNER TO postgres;
+
+--
+-- Name: change_chair_status(); Type: PROCEDURE; Schema: catalog; Owner: postgres
+--
+
+CREATE PROCEDURE catalog.change_chair_status()
+    LANGUAGE plpgsql
+    AS $$ 
+DECLARE
+	rec RECORD;
+BEGIN
+	FOR rec IN SELECT chair_id , status ,created_at  FROM catalog.chairs 
+	LOOP
+		IF rec.status = 'NEW' AND EXTRACT(day FROM AGE(NOW(), rec.created_at)) > 3 THEN
+			UPDATE catalog.chairs SET status = 'AVAILABLE' WHERE chair_id = rec.chair_id;
+		END IF;
+	END LOOP;
+END; $$;
+
+
+ALTER PROCEDURE catalog.change_chair_status() OWNER TO postgres;
 
 --
 -- Name: get_chair_info(character varying); Type: FUNCTION; Schema: catalog; Owner: postgres
@@ -71,10 +148,15 @@ CREATE FUNCTION catalog.get_chair_info(chair_name character varying) RETURNS SET
 BEGIN
 
 	RETURN QUERY
-	SELECT C.name,C.description,C.status,C.color,C.height,C.weight,C.discount , I.image_url 
+	SELECT C.name,C.description,C.status,C.color,C.height,
+			C.weight,C.discount , I.image_url, C.price,C.width , COALESCE(R.rate,0)
 	FROM catalog.chairs C
 	INNER JOIN catalog.images I
 	ON C.name = I.name 
+	LEFT JOIN (
+		SELECT chair_id , ROUND(AVG(rating)) AS rate FROM catalog.reviews GROUP BY chair_id
+	) R
+	ON C.chair_id = R.chair_id
 	WHERE C.name = chair_name;
 	
 END;
@@ -87,7 +169,7 @@ ALTER FUNCTION catalog.get_chair_info(chair_name character varying) OWNER TO pos
 -- Name: get_chairs_by_category(character varying); Type: FUNCTION; Schema: catalog; Owner: postgres
 --
 
-CREATE FUNCTION catalog.get_chairs_by_category(ctg character varying) RETURNS SETOF catalog.chair_info_type
+CREATE FUNCTION catalog.get_chairs_by_category(ctg character varying) RETURNS SETOF catalog.chairs_type
     LANGUAGE plpgsql
     AS $$
 DECLARE 
@@ -98,7 +180,7 @@ BEGIN
 
 	-- SELECT ALL THE CHAIRS WITH THE GITTEN ID
 	RETURN QUERY
-	SELECT C.name,C.description,C.status,C.color,C.height,C.weight,C.discount , I.image_url 
+	SELECT C.name,C.description,C.status,I.image_url ,C.price
 	FROM catalog.chairs C
 	INNER JOIN (
 			SELECT name , image_url ,
@@ -113,6 +195,37 @@ $$;
 
 
 ALTER FUNCTION catalog.get_chairs_by_category(ctg character varying) OWNER TO postgres;
+
+--
+-- Name: get_reviews(character varying); Type: FUNCTION; Schema: catalog; Owner: postgres
+--
+
+CREATE FUNCTION catalog.get_reviews(chairname character varying) RETURNS TABLE(first_name character varying, last_name character varying, comment character varying, rating numeric, picture_url character varying)
+    LANGUAGE plpgsql
+    AS $$
+DECLARE 
+	chairID INT;
+BEGIN
+	SELECT chair_id INTO chairID FROM catalog.chairs WHERE name = chairName;
+	
+	RETURN QUERY
+	SELECT U2.first_name , U2.last_name ,R.comment , ROUND(R.rating)::NUMERIC , U2.picture_url 
+	FROM catalog.reviews R
+	INNER JOIN catalog.chairs C
+	ON R.chair_id = C.chair_id
+	INNER JOIN (
+		SELECT U1.id , U1.first_name , U1.last_name , P.picture_url
+		FROM accounts.users U1
+		INNER JOIN accounts.user_profile P
+		ON U1.id = P.user_id
+	) U2
+	ON R.user_id = U2.id 
+	WHERE R.chair_id = chairID;
+END;
+$$;
+
+
+ALTER FUNCTION catalog.get_reviews(chairname character varying) OWNER TO postgres;
 
 SET default_tablespace = '';
 
@@ -161,6 +274,7 @@ CREATE TABLE accounts.users (
     email character varying(255) NOT NULL,
     first_name character varying(255) NOT NULL,
     last_name character varying(255) NOT NULL,
+    password character varying(255) NOT NULL,
     role character varying(255) NOT NULL,
     CONSTRAINT users_role_check CHECK (((role)::text = ANY ((ARRAY['CUSTOMER'::character varying, 'ADMIN'::character varying])::text[])))
 );
@@ -238,7 +352,9 @@ CREATE TABLE catalog.chairs (
     height character varying(255) NOT NULL,
     name character varying(255) NOT NULL,
     status character varying(255) NOT NULL,
-    weight character varying(255) NOT NULL
+    weight character varying(255) NOT NULL,
+    price integer,
+    width character varying(255)
 );
 
 
@@ -271,11 +387,8 @@ CREATE VIEW catalog.getallchairs AS
  SELECT c.name,
     c.description,
     c.status,
-    c.color,
-    c.height,
-    c.weight,
-    c.discount,
-    i.image_url
+    i.image_url,
+    c.price
    FROM (catalog.chairs c
      JOIN rankedimages i ON (((c.name)::text = (i.name)::text)))
   WHERE (i.rank = 1)
@@ -298,11 +411,8 @@ CREATE VIEW catalog.getrecentchairs AS
  SELECT c.name,
     c.description,
     c.status,
-    c.color,
-    c.height,
-    c.weight,
-    c.discount,
-    i.image_url
+    i.image_url,
+    c.price
    FROM (catalog.chairs c
      JOIN rankedimages i ON (((c.name)::text = (i.name)::text)))
   WHERE (i.rank = 1)
@@ -345,11 +455,12 @@ ALTER SEQUENCE catalog.review_seq OWNER TO postgres;
 --
 
 CREATE TABLE catalog.reviews (
-    review_id bigint NOT NULL,
+    review_id bigint DEFAULT nextval('catalog.review_seq'::regclass) NOT NULL,
     chair_id integer NOT NULL,
     created_at timestamp(6) without time zone NOT NULL,
     rating integer NOT NULL,
-    user_id integer NOT NULL
+    user_id integer NOT NULL,
+    comment character varying(255)
 );
 
 
@@ -474,6 +585,9 @@ ALTER TABLE orders.shopping_cart OWNER TO postgres;
 --
 
 COPY accounts.user_profile (profile_id, address, city, country, created_at, phone_number, picture_url, status, user_id) FROM stdin;
+1	\N	\N	\N	2024-09-08 10:58:33.7734	\N	\N	ACTIVE	1
+2	\N	\N	\N	2024-09-08 10:58:54.980045	\N	\N	ACTIVE	2
+3	\N	\N	\N	2024-09-08 10:59:03.785237	\N	\N	ACTIVE	3
 \.
 
 
@@ -481,7 +595,10 @@ COPY accounts.user_profile (profile_id, address, city, country, created_at, phon
 -- Data for Name: users; Type: TABLE DATA; Schema: accounts; Owner: postgres
 --
 
-COPY accounts.users (id, created_at, email, first_name, last_name, role) FROM stdin;
+COPY accounts.users (id, created_at, email, first_name, last_name, password, role) FROM stdin;
+1	2024-09-09 12:47:07.717	abdo@gmail.com	abdo	belhaje	$2a$10$cAM9U6uWKO8RaAv3MXPmIuieTeAuoTDkT/V2fLXGz4DECpsXTEfqC	CUSTOMER
+2	2024-09-09 13:23:22.881	ali@gmail.com	ali	ouarigh	$2a$10$Et359.CL5jFkBnwCcTNYNurmHwNyxqvmMjjkw7onCcUMyzVRUYC.C	CUSTOMER
+3	2024-09-09 13:23:34.933	reda@gmail.com	reda	lamiini	$2a$10$wdGsUHAvPvxl5DqZJkMkbOzJsdi6jHbusHq46Sh9QLYcUJ8dRvV.K	CUSTOMER
 \.
 
 
@@ -494,7 +611,7 @@ COPY catalog.categories (ctg_id, created_at, description, name) FROM stdin;
 2	2024-09-02 19:59:47.680988	Luxurious chairs often made from leather and designed for high-level executives.	Dining
 3	2024-09-02 19:59:47.680988	Chairs that can be easily folded and stored, ideal for small spaces or additional seating.	Healthcare
 4	2024-09-02 19:59:47.680988	Chairs that recline backward and often have a footrest, providing maximum relaxation.	Outdoor
-5	2024-09-02 19:59:47.680988	Chairs designed to support children while studying or doing homework.	Living Room 
+5	2024-09-02 19:59:47.680988	Chairs designed to support children while studying or doing homework.	Living Room
 \.
 
 
@@ -502,13 +619,13 @@ COPY catalog.categories (ctg_id, created_at, description, name) FROM stdin;
 -- Data for Name: chairs; Type: TABLE DATA; Schema: catalog; Owner: postgres
 --
 
-COPY catalog.chairs (chair_id, color, created_at, ctg_id, description, discount, height, name, status, weight) FROM stdin;
-1	Black	2024-09-03 23:44:14.829	1	Designed to provide comfort and support for long hours of work.	0	107 cm	Ergonomic Chair	NEW	59 cm
-3	Light Grey	2024-09-04 13:30:31.041	1	Luxurious chairs often made from leather and designed for high-level executives.	0	107 cm	Executive Chairs	NEW	59 cm
-4	Sky Blue	2024-09-04 14:51:07.517	1	Simple, often smaller chairs meant for short-duration tasks or as general-purpose office seating.	0	107 cm	Task Chairs	NEW	59 cm
-5	Padded Textilene Gray	2024-09-04 14:56:45.033	4	Chairs designed specifically for outdoor use, often made from weather-resistant materials.	0	107 cm	Patio Chairs	NEW	59 cm
-2	Velvet Dark Grey	2024-09-03 23:57:38.092	4	 Chairs that recline backward and often have a footrest, providing maximum relaxation.	0	107 cm	Recliners Chair	NEW	59 cm
-6	Green	2024-09-04 15:01:30.834	4	Portable, foldable chairs suitable for camping and outdoor activities.	0	107 cm	Camping Chairs	NEW	59 cm
+COPY catalog.chairs (chair_id, color, created_at, ctg_id, description, discount, height, name, status, weight, price, width) FROM stdin;
+1	Black	2024-09-03 23:44:14.829	1	Designed to provide comfort and support for long hours of work.	0	107 cm	Ergonomic Chair	AVAILABLE	59 cm	300	42 cm
+4	Sky Blue	2024-09-04 14:51:07.517	1	Simple, often smaller chairs meant for short-duration tasks or as general-purpose office seating.	0	107 cm	Task Chairs	AVAILABLE	59 cm	300	42 cm
+6	Green	2024-09-04 15:01:30.834	4	Portable, foldable chairs suitable for camping and outdoor activities.	0	107 cm	Camping Chairs	AVAILABLE	59 cm	300	42 cm
+2	Velvet Dark Grey	2024-09-03 23:57:38.092	4	 Chairs that recline backward and often have a footrest, providing maximum relaxation.	0	107 cm	Recliners Chair	AVAILABLE	59 cm	470	45 cm
+3	Light Grey	2024-09-04 13:30:31.041	1	Luxurious chairs often made from leather and designed for high-level executives.	0	107 cm	Executive Chairs	AVAILABLE	59 cm	350	45 cm
+5	Padded Textilene Gray	2024-09-04 14:56:45.033	4	Chairs designed specifically for outdoor use, often made from weather-resistant materials.	0	107 cm	Patio Chairs	AVAILABLE	59 cm	400	45 cm
 \.
 
 
@@ -544,7 +661,20 @@ COPY catalog.images (image_id, image_url, name) FROM stdin;
 -- Data for Name: reviews; Type: TABLE DATA; Schema: catalog; Owner: postgres
 --
 
-COPY catalog.reviews (review_id, chair_id, created_at, rating, user_id) FROM stdin;
+COPY catalog.reviews (review_id, chair_id, created_at, rating, user_id, comment) FROM stdin;
+1	1	2024-09-06 21:59:49.262296	4	1	This icon pack is just what I need for my latest project. There s an icon for just about anything I could ever need. Love the playful look!
+2	2	2024-09-06 22:00:09.782505	4	1	This icon pack is just what I need for my latest project. There s an icon for just about anything I could ever need. Love the playful look!
+3	3	2024-09-06 22:00:29.04378	5	1	This icon pack is just what I need for my latest project. There s an icon for just about anything I could ever need. Love the playful look!
+5	4	2024-09-09 20:49:43.254175	4	3	I m not really impressive with its design . he could be better then that
+6	1	2024-09-10 13:31:08.634675	3	2	Lovely Chair !
+7	4	2024-09-10 13:36:49.302147	4	2	Its a usefull chair with a good quality .
+11	5	2024-09-10 16:58:19.138932	5	1	llllll
+12	6	2024-09-10 17:49:11.598407	4	1	hhhh
+13	4	2024-09-10 17:50:22.202946	3	1	 l like it
+14	2	2024-09-10 17:51:56.956585	3	1	lovely chair
+15	5	2024-09-10 18:14:13.839782	4	1	I like it
+48	6	2024-09-10 18:31:53.877545	2	3	I don't like because I don't trip !
+49	3	2024-09-10 18:32:39.14562	4	3	I like it
 \.
 
 
@@ -599,7 +729,7 @@ SELECT pg_catalog.setval('accounts.user_profile_seq', 1, false);
 -- Name: users_seq; Type: SEQUENCE SET; Schema: accounts; Owner: postgres
 --
 
-SELECT pg_catalog.setval('accounts.users_seq', 1, false);
+SELECT pg_catalog.setval('accounts.users_seq', 5, true);
 
 
 --
@@ -627,7 +757,7 @@ SELECT pg_catalog.setval('catalog.image_seq', 20, true);
 -- Name: review_seq; Type: SEQUENCE SET; Schema: catalog; Owner: postgres
 --
 
-SELECT pg_catalog.setval('catalog.review_seq', 1, false);
+SELECT pg_catalog.setval('catalog.review_seq', 49, true);
 
 
 --
@@ -657,6 +787,14 @@ SELECT pg_catalog.setval('orders.payment_seq', 1, false);
 
 ALTER TABLE ONLY accounts.users
     ADD CONSTRAINT uk6dotkott2kjsp8vw4d0m25fb7 UNIQUE (email);
+
+
+--
+-- Name: users ukr53o2ojjw4fikudfnsuuga336; Type: CONSTRAINT; Schema: accounts; Owner: postgres
+--
+
+ALTER TABLE ONLY accounts.users
+    ADD CONSTRAINT ukr53o2ojjw4fikudfnsuuga336 UNIQUE (password);
 
 
 --
@@ -757,4 +895,3 @@ CREATE INDEX idx_chairs_name ON catalog.chairs USING btree (name);
 --
 -- PostgreSQL database dump complete
 --
-

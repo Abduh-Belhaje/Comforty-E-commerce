@@ -28,8 +28,57 @@ import { Rating } from "@mui/material";
 import {
   getChairDetails,
   getChairReviews,
+  addReview,
 } from "../../../../services/productsService";
 import Inconnu from "../../../../../public/inconnu.jpg";
+import {
+  SuccessAlert,
+  WaringAlert,
+} from "../../../../components/ui/alert-dialog";
+import { extractEmail } from "../../../../lib/utils";
+
+const faqs = [
+  {
+    question: "What format are these icons?",
+    answer:
+      "The icons are in SVG (Scalable Vector Graphic) format. They can be imported into your design tool of choice and used directly in code.",
+  },
+  {
+    question: "Can I use the icons at different sizes?",
+    answer:
+      "Yes. The icons are drawn on a 24 x 24 pixel grid, but the icons can be scaled to different sizes as needed. We don't recommend going smaller than 20 x 20 or larger than 64 x 64 to retain legibility and visual balance.",
+  },
+  // More FAQs...
+];
+const license = {
+  href: "#",
+  summary:
+    "For personal and professional use. You cannot resell or redistribute these icons in their original or modified state.",
+  content: `
+    <h4>Overview</h4>
+    
+    <p>For personal and professional use. You cannot resell or redistribute these icons in their original or modified state.</p>
+    
+    <ul role="list">
+    <li>You're allowed to use the icons in unlimited projects.</li>
+    <li>Attribution is not required to use the icons.</li>
+    </ul>
+    
+    <h4>What you can do with it</h4>
+    
+    <ul role="list">
+    <li>Use them freely in your personal and professional work.</li>
+    <li>Make them your own. Change the colors to suit your project or brand.</li>
+    </ul>
+    
+    <h4>What you can't do with it</h4>
+    
+    <ul role="list">
+    <li>Don't be greedy. Selling or distributing these icons in their original or modified state is prohibited.</li>
+    <li>Don't be evil. These icons cannot be used on websites or applications that promote illegal or immoral beliefs or activities.</li>
+    </ul>
+  `,
+};
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -37,8 +86,8 @@ function classNames(...classes) {
 
 export default function ProductPage() {
   const [isReviewOpen, setIsReviewOpen] = useState(false);
-  const [reviewText, setReviewText] = useState("");
-  const [reviewRating, setReviewRating] = useState(0);
+  const [comment, setcomment] = useState("");
+  const [rating, setrating] = useState(0);
   const [selectedImg, setSelectedImg] = useState();
   const [product, setProduct] = useState();
   const [reviews, setReviews] = useState();
@@ -48,12 +97,41 @@ export default function ProductPage() {
     Width: "58 cm",
     Weight: "20 Kg",
   });
-
+  const [alertMsg, setAlterMsg] = useState("");
+  const [showAlert, setShowAlert] = useState(false);
+  const [successAlert, setShowSuccess] = useState(false);
   const openReviewModal = () => setIsReviewOpen(true);
   const closeReviewModal = () => setIsReviewOpen(false);
-  const submitReview = () => {
-    // Handle review submission here (e.g., save to the server)
-    console.log("Review submitted:", reviewText, reviewRating);
+
+  const submitReview = async () => {
+    const email = extractEmail();
+    if (email) {
+      const response = await addReview({
+        email: email,
+        name: product.name,
+        rating,
+        comment,
+      });
+      if (response.success) {
+        setAlterMsg("Review added successfully");
+        setShowSuccess(true);
+        setTimeout(() => {
+          setShowSuccess(false);
+        }, 2500);
+      } else {
+        setAlterMsg(response.message);
+        setShowAlert(true);
+        setTimeout(() => {
+          setShowAlert(false);
+        }, 2500);
+      }
+    } else {
+      setAlterMsg("User not authenticated !");
+      setShowAlert(true);
+      setTimeout(() => {
+        setShowAlert(false);
+      }, 2500);
+    }
     closeReviewModal();
   };
 
@@ -84,8 +162,11 @@ export default function ProductPage() {
       });
     }
   }, [product]);
+
   return (
     <div className="bg-white border mb-24">
+      {showAlert && <WaringAlert msg={alertMsg} />}
+      {successAlert && <SuccessAlert msg={alertMsg} />}
       <div className="mx-auto px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
         {/* Product */}
         <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
@@ -120,18 +201,19 @@ export default function ProductPage() {
                     ${product && product.price}
                   </span>
                   <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((rating) => (
-                      <StarIcon
-                        key={rating}
-                        className={classNames(
-                          product && product.rate >= rating
-                            ? "text-yellow-400"
-                            : "text-gray-300",
-                          "h-5 w-5 flex-shrink-0"
-                        )}
-                        aria-hidden="true"
-                      />
-                    ))}
+                    {product &&
+                      [1, 2, 3, 4, 5].map((rating) => (
+                        <StarIcon
+                          key={rating}
+                          className={classNames(
+                            product.rate >= rating
+                              ? "text-yellow-400"
+                              : "text-gray-300",
+                            "h-5 w-5 flex-shrink-0"
+                          )}
+                          aria-hidden="true"
+                        />
+                      ))}
                   </div>
                 </div>
               </div>
@@ -306,17 +388,17 @@ export default function ProductPage() {
                           <div className="mt-4">
                             <Rating
                               name="review-rating"
-                              value={reviewRating}
+                              value={rating}
                               onChange={(event, newValue) =>
-                                setReviewRating(newValue)
+                                setrating(parseInt(newValue))
                               }
                               precision={0.5}
                               size="large"
                               className="text-yellow-400"
                             />
                             <textarea
-                              value={reviewText}
-                              onChange={(e) => setReviewText(e.target.value)}
+                              value={comment}
+                              onChange={(e) => setcomment(e.target.value)}
                               rows="4"
                               className="mt-4 outline-none block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                               placeholder="Write your review here..."

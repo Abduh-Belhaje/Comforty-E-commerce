@@ -89,3 +89,26 @@ export async function getChairReviews(name) {
     return { success: false, message: "Failed to fetch product categories." };
   }
 }
+
+export async function addReview(data) {
+  console.log(data);
+
+  try {
+    const token = localStorage.getItem("access-token");
+    const headers = {
+      Authorization: `Bearer ${token}`,
+    };
+
+    const response = await axios.post(
+      "http://localhost:8080/v1/reviews/add",
+      data,
+      { headers }
+    );
+    return { success: true, message: response.data };
+  } catch (error) {
+    // Extract a useful error message
+    const errorMessage =
+      error.response?.data?.message || "An unexpected error occurred";
+    return { success: false, message: errorMessage };
+  }
+}

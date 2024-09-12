@@ -19,7 +19,7 @@ function SliderSection() {
           </div>
         </SwiperSlide>
         <SwiperSlide className="flex items-center justify-center bg-white rounded-lg shadow-md p-4">
-          <div className="relative w-[1740px] h-[850px] max-w-full mx-auto md:w-[1400px] md:h-[700px] sm:w-[1000px] sm:h-[500px]">
+          <div className="relative w-[740px] h-[850px] max-w-full mx-auto md:w-[1400px] md:h-[700px] sm:w-[1000px] sm:h-[500px]">
             <Product />
           </div>
         </SwiperSlide>

@@ -21,7 +21,7 @@ import java.io.IOException;
 @Slf4j
 public class StorageServiceImpl implements StorageService {
 
-    private String bucketName;
+    private String bucketName = "comfortyawsbucket";
 
     private final S3Client s3Client;
 

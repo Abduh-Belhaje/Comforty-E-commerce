@@ -11,7 +11,8 @@ CREATE TABLE IF NOT EXISTS accounts.users (
     first_name VARCHAR(255),
     last_name VARCHAR(255),
     role VARCHAR(255),
-    email VARCHAR(255) UNIQUE
+    email VARCHAR(255) UNIQUE,
+    password VARCHAR(255) UNIQUE
 );
 
 
@@ -47,6 +48,8 @@ CREATE TABLE IF NOT EXISTS catalog.chairs (
     color VARCHAR(10),
     height VARCHAR(4),
     weight VARCHAR(4),
+    width VARCHAR(4),
+    price VARCHAR(4),
     discount VARCHAR(4),
     description VARCHAR(255)
 );

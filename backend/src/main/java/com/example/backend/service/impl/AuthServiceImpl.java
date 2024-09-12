@@ -1,11 +1,17 @@
 package com.example.backend.service.impl;
 
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.security.core.Authentication;
 
 import com.example.backend.dto.auth.JwtResponse;
 import com.example.backend.dto.auth.SignInRequest;
 import com.example.backend.dto.auth.SignUpRequest;
-
+import com.example.backend.exception.AuthenticationFailedException;
 import com.example.backend.exception.EmailAlreadyExistsException;
 import com.example.backend.exception.EmailNotFoundException;
 import com.example.backend.model.Role;
@@ -24,15 +30,29 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public JwtResponse Signin(SignInRequest request) throws EmailNotFoundException {
+    public JwtResponse Signin(SignInRequest request) throws EmailNotFoundException, AuthenticationFailedException {
+        try {
+            Authentication authentication = authenticationManager
+                    .authenticate(
+                            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
+            SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        var user = userRepository.findUserByEmail(request.getU_email())
-                .orElseThrow(() -> new EmailNotFoundException("Email " + request.getU_email() + " doesn't exsit ."));
-        var jwt = jwtService.generateToken(user);
+            var user = userRepository.findUserByEmail(request.getEmail())
+                    .orElseThrow(
+                            () -> new EmailNotFoundException("Email " + request.getEmail() + " doesn't exsit ."));
 
-        return new JwtResponse(jwt);
+            var jwt = jwtService.generateToken(user);
+            JwtResponse jwtAuthResponse = new JwtResponse(jwt);
+            jwtAuthResponse.setToken(jwt);
+
+            return new JwtResponse(jwt);
+        } catch (AuthenticationException e) {
+            throw new AuthenticationFailedException("Authentication failed : " + e.getMessage());
+        }
     }
 
     @Override
@@ -40,7 +60,8 @@ public class AuthServiceImpl implements AuthService {
         boolean exist = userRepository.existsByEmail(request.getU_email());
 
         if (!exist) {
-            User user = new User(request.getFirst_name(), request.getLast_name(), request.getU_email(), Role.CUSTOMER,
+            User user = new User(request.getFirst_name(), request.getLast_name(), request.getU_email(),
+                    passwordEncoder.encode(request.getPassword()), Role.CUSTOMER,
                     new Timestamp(System.currentTimeMillis()));
 
             user = userRepository.save(user);
@@ -48,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
 
             return new JwtResponse(jwt);
         } else {
-            throw new EmailAlreadyExistsException("Email already exists in the database.", request.getU_email());
+            throw new EmailAlreadyExistsException("Email already exists in the database : ", request.getU_email());
         }
 
     }

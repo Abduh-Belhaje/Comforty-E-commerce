@@ -8,7 +8,6 @@ import {
 
 // Create a context
 const ProductContext = createContext();
-
 // Create a provider component
 export const ProductProvider = ({ children }) => {
   const [watchlist, setWatchlist] = useState([]);
@@ -20,10 +19,18 @@ export const ProductProvider = ({ children }) => {
   const [totalChairs, setTotalChairs] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const chairsPerPage = 8;
+  const [bag, setBag] = useState([]); // New bag state
 
+  // Fetch watchlist from localStorage on initial load
   useEffect(() => {
     const savedWatchlist = JSON.parse(localStorage.getItem("watchlist")) || [];
     setWatchlist(savedWatchlist);
+  }, []);
+
+  // Fetch bag from localStorage on initial load
+  useEffect(() => {
+    const savedBag = JSON.parse(localStorage.getItem("bag")) || [];
+    setBag(savedBag);
   }, []);
 
   useEffect(() => {
@@ -36,11 +43,21 @@ export const ProductProvider = ({ children }) => {
     }
   }, [watchlist]);
 
+  useEffect(() => {
+    try {
+      if (bag.length !== 0) {
+        localStorage.setItem("bag", JSON.stringify(bag));
+      }
+    } catch (error) {
+      console.error("Failed to save bag to localStorage", error);
+    }
+  }, [bag]);
+
   // Function to fetch recent products
   const getRecentProducts = async () => {
     try {
-      const products = await RecentProducts(); // Call the service
-      setRecentProducts(products); // Store recent products in state
+      const products = await RecentProducts();
+      setRecentProducts(products);
     } catch (error) {
       console.error("Failed to fetch recent products:", error);
     }
@@ -49,8 +66,8 @@ export const ProductProvider = ({ children }) => {
   // Function to fetch all categories
   const getAllCategories = async () => {
     try {
-      const response = await getCategories(); // Call the service
-      setCategories(response); // Store categories in state
+      const response = await getCategories();
+      setCategories(response);
     } catch (error) {
       console.error("Failed to fetch categories:", error);
     }
@@ -85,16 +102,15 @@ export const ProductProvider = ({ children }) => {
     getAllCategories();
     fetchTotalChairs(); // Fetch total number of chairs for pagination
     getChairs(currentPage);
-  }, [currentPage, selectedCategory]); // Empty dependency array ensures it runs only once
+  }, [currentPage, selectedCategory]);
 
   // Add a product to the watchlist
   const addToWatchlist = (product) => {
     setWatchlist((prev) => {
-      // Check if the product is already in the watchlist
       const isProductInWatchlist = prev.some(
         (item) => item.name === product.name
       );
-      if (isProductInWatchlist) return prev; // No duplicates
+      if (isProductInWatchlist) return prev;
 
       const updatedWatchlist = [...prev, product];
       localStorage.setItem("watchlist", JSON.stringify(updatedWatchlist));
@@ -113,9 +129,34 @@ export const ProductProvider = ({ children }) => {
     });
   };
 
+  // Add a product to the bag
+  const addToBag = (product) => {
+    setBag((prev) => {
+      const isProductInBag = prev.some((item) => item.name === product.name);
+      if (isProductInBag) return prev; // No duplicates
+
+      const updatedBag = [...prev, product];
+      localStorage.setItem("bag", JSON.stringify(updatedBag));
+      return updatedBag;
+    });
+  };
+
+  // Remove a product from the bag
+  const removeFromBag = (productName) => {
+    setBag((prev) => {
+      const updatedBag = prev.filter((product) => product.name !== productName);
+      localStorage.setItem("bag", JSON.stringify(updatedBag));
+      return updatedBag;
+    });
+  };
+  const calculateTotal = () => {
+    return bag.reduce((total, item) => total + item.price, 0);
+  };
+
   return (
     <ProductContext.Provider
       value={{
+        calculateTotal,
         watchlist,
         recentProducts,
         categories,
@@ -130,14 +171,15 @@ export const ProductProvider = ({ children }) => {
         chairsPerPage,
         addToWatchlist,
         removeFromWatchlist,
+        bag,
+        addToBag,
+        removeFromBag,
       }}
     >
       {children}
     </ProductContext.Provider>
   );
 };
-
-// Custom hook to use the ProductContext
 export function useProductContext() {
   return useContext(ProductContext);
 }

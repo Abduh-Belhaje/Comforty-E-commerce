@@ -18,7 +18,7 @@ Comforty E-commerce is a web application providing a seamless shopping experienc
  - Frontend: React, Tailwind CSS
  - Backend: Java Spring Boot
  - Database: PostgreSQL
- - Tools: Docker, Stripe (for payments)
+ - Others: Docker, Stripe (for payments) , Amazon S3 for blob storage
 
 
 ## Getting Started

@@ -31,10 +31,10 @@ import {
   addReview,
 } from "../../../../services/productsService";
 import Inconnu from "../../../../../public/inconnu.jpg";
-import {
-  SuccessAlert,
-  WaringAlert,
-} from "../../../../components/ui/alert-dialog";
+// import {
+//   SuccessAlert,
+//   WaringAlert,
+// } from "../../../../components/ui/alert-dialog";
 import { extractEmail } from "../../../../lib/utils";
 
 const faqs = [

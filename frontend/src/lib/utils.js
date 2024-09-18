@@ -15,3 +15,11 @@ export const extractEmail = ()=>{
   }
   return null;
 }
+
+
+export const availbleToken = () => {
+  if(localStorage.getItem('access-token') !== null){
+    return true;
+  }
+  return window.location.href = "/auth/signin";
+}

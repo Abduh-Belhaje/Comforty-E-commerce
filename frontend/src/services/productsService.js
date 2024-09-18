@@ -91,12 +91,11 @@ export async function getChairReviews(name) {
 }
 
 export async function addReview(data) {
-  console.log(data);
 
   try {
     const token = localStorage.getItem("access-token");
     const headers = {
-      Authorization: `Bearer ${token}`,
+      'Authorization': `Bearer ${token}`,
     };
 
     const response = await axios.post(

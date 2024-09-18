@@ -3,6 +3,9 @@ ALTER COLUMN review_id SET DEFAULT nextval('catalog.review_seq');
 
 
 
+
+
+
 -----------------------------------------------------
 -- View for showing all chairs with their first image
 -----------------------------------------------------

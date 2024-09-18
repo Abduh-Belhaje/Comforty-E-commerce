@@ -174,7 +174,7 @@ function Header() {
             aria-hidden="true"
             onClick={() => setCartOpen(false)}
           ></div>
-          <div className="relative z-50 flex w-full max-w-xs flex-col overflow-y-auto bg-white ">
+          <div className="relative z-50 flex w-full max-w-xs flex-col overflow-y-auto bg-white">
             <div className="flex items-center justify-between p-4 border-b">
               <h2 className="text-lg font-semibold">Your Cart</h2>
               <button
@@ -199,7 +199,7 @@ function Header() {
                           className="flex items-center space-x-3"
                         >
                           <img
-                            src={item.image_url}
+                            src={item.images[0]}
                             alt={item.name}
                             className="w-12 h-12 object-cover rounded-lg border border-gray-300"
                           />
@@ -221,10 +221,11 @@ function Header() {
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-4 flex justify-between items-center border-t border-gray-200 pt-4">
+                  <div className="mt-4 flex justify-center items-center pt-4">
                     <Link
                       to="/order"
-                      className="bg-indigo-600 text-white hover:bg-indigo-700 rounded-md px-4 py-2"
+                      onClick={()=> setCartOpen(false)}
+                      className="bg-indigo-600 text-white hover:bg-indigo-700 rounded-md px-16 py-2"
                     >
                       Order Now
                     </Link>

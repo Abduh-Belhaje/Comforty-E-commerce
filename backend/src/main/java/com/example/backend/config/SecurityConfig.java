@@ -37,6 +37,7 @@ public class SecurityConfig {
                         .requestMatchers("/v1/auth/**").permitAll()
                         .requestMatchers("/v1/product/**").permitAll()
                         .requestMatchers("/v1/reviews/{name}").permitAll()
+                        .requestMatchers("/v1/payment/**").permitAll()
                         .anyRequest().authenticated())
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

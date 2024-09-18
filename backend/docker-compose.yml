@@ -17,7 +17,7 @@ services:
       - mynetwork
   
   comforty:
-    image: abdo001/comforty:v2
+    image: abdo001/comforty:v3
     ports:
       - "8080:8080"
     environment:
@@ -29,6 +29,7 @@ services:
       - postgres-db
     networks:
       - mynetwork
+      
 
 networks:
   mynetwork:

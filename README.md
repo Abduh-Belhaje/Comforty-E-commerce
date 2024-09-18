@@ -18,7 +18,7 @@ Comforty E-commerce is a web application providing a seamless shopping experienc
  - Frontend: React, Tailwind CSS
  - Backend: Java Spring Boot
  - Database: PostgreSQL
- - Tools: Docker, Stripe (for payments)
+ - Others: Docker, Stripe (for payments) , Amazon S3 for blob storage
 
 
 ## Getting Started
@@ -29,15 +29,31 @@ Comforty E-commerce is a web application providing a seamless shopping experienc
 
 ### Starting
 
- - Pull the Docker images:
-    Backend :
+ - Clone thethe repository:
+   ```sh
+      git clone https://github.com/Abduh-Belhaje/Comforty-E-commerce.git
 
+ - Pull the Backend image:
     ```sh
-    docker pull abdo001/comforty:v2
+       docker pull abdo001/comforty:v2
 
-    Frontend :
-
+  - Pull the Frontend image:
     ```sh
-    docker pull rida999/comforty:v2
+       docker pull rida999/comforty:v2
+
+  - Run docker-compose file :
+    ```sh
+        cd backend
+        docker-compose up -d --build
+    
+  - Restore the database Backup :
+    ```sh
+        docker exec -i postgres-db psql -U postgres -d comfortyDB < backup.sql
+
+
+
+## Contact
+
+For any questions or feedback, please feel free to open an issue on GitHub Issues.
 
 

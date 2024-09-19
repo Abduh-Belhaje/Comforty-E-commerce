@@ -43,7 +43,6 @@ Comforty E-commerce is a web application providing a seamless shopping experienc
         docker exec -i postgres-db psql -U postgres -d comfortyDB < backup.sql
 
 
-
 ## Contact
 
 For any questions or feedback, please feel free to open an issue on GitHub Issues.

@@ -33,14 +33,6 @@ Comforty E-commerce is a web application providing a seamless shopping experienc
    ```sh
       git clone https://github.com/Abduh-Belhaje/Comforty-E-commerce.git
 
- - Pull the Backend image:
-    ```sh
-       docker pull abdo001/comforty:v2
-
-  - Pull the Frontend image:
-    ```sh
-       docker pull rida999/comforty:v2
-
   - Run docker-compose file :
     ```sh
         cd backend

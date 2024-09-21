@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useProductContext } from "../../../contexte/ProductContext";
 
 function ProductFrame({ product }) {
-  const { watchlist, addToWatchlist, removeFromWatchlist, addToBag } =
+  const { watchlist, addToWatchlist, removeFromWatchlist } =
     useProductContext();
 
   const isInWatchlist = (productName) => {
@@ -77,7 +77,6 @@ function ProductFrame({ product }) {
             </p>
             <div className="flex justify-end">
               <Button
-                onClick={() => addToBag(product)}
                 className="flex justify-end items-center gap-1 p-2 text-gray-500 hover:text-green-500 border border-gray-300 rounded-md bg-white shadow-sm hover:bg-green-50"
                 aria-label="Add to Bag"
               >

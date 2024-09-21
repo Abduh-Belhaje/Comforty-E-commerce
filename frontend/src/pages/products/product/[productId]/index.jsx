@@ -36,6 +36,8 @@ import Inconnu from "../../../../../public/inconnu.jpg";
 //   WaringAlert,
 // } from "../../../../components/ui/alert-dialog";
 import { extractEmail } from "../../../../lib/utils";
+import { useProductContext } from "../../../../contexte/ProductContext";
+
 
 const faqs = [
   {
@@ -97,6 +99,7 @@ export default function ProductPage() {
     Width: "58 cm",
     Weight: "20 Kg",
   });
+  const { addToBag } = useProductContext();
   const [alertMsg, setAlterMsg] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [successAlert, setShowSuccess] = useState(false);
@@ -142,7 +145,7 @@ export default function ProductPage() {
       const response = await getChairDetails(name);
       setProduct(response);
     };
-
+    
     const fetchChairReviews = async () => {
       const response = await getChairReviews(name);
       setReviews(response);
@@ -162,6 +165,12 @@ export default function ProductPage() {
       });
     }
   }, [product]);
+
+  const calculateNewPrice = () => {
+    const discount = product.price * (product.discount / 100) ;
+    return product.price - discount;
+
+  }
 
   return (
     <div className="bg-white border mb-24">
@@ -197,9 +206,16 @@ export default function ProductPage() {
               <div>
                 <h3 className="sr-only">Reviews</h3>
                 <div className="flex py-3 items-center">
-                  <span className="pr-10 text-xl font-extrabold text-green-700">
-                    ${product && product.price}
-                  </span>
+                    <span className="pr-5 text-xl font-extrabold text-green-700">
+                      ${product && product.discount != 0 ? calculateNewPrice() : product && product.price}
+                    </span>  
+                    {product && product.discount != 0 &&
+                    <span className="pr-10 text-xl text-gray-500 line-through">
+                      ${product.price}
+                    </span> 
+                    }         
+                              
+                  
                   <div className="flex items-center">
                     {product &&
                       [1, 2, 3, 4, 5].map((rating) => (
@@ -243,6 +259,7 @@ export default function ProductPage() {
             <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2">
               <button
                 type="button"
+                onClick={() => addToBag(product)}
                 className="flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 px-8 py-3 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50"
               >
                 Add to Cart

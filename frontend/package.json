@@ -31,7 +31,12 @@
     "@radix-ui/react-select": "^2.1.1",
     "@radix-ui/react-separator": "^1.1.0",
     "@radix-ui/react-slot": "^1.1.0",
+<<<<<<< HEAD
     "@radix-ui/react-tabs": "^1.1.0",
+=======
+    "@stripe/react-stripe-js": "^2.8.0",
+    "@stripe/stripe-js": "^4.4.0",
+>>>>>>> 8b7cb326f2445e9ec40fd0489dc630b196dce93e
     "axios": "^1.7.7",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

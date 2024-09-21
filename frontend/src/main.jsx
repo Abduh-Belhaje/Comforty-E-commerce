@@ -5,6 +5,8 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import SignInPage from "./auth/sign-in/index.jsx";
 import Home from "./pages/home/index.jsx";
+import AboutPage from "./pages/about/index.jsx";
+import ContactPage from "./pages/contact/index.jsx";
 import SignUpPage from "./auth/sign-up/index.jsx";
 import { Toaster } from "@/components/ui/sonner";
 import Products from "./pages/products/index.jsx";
@@ -36,6 +38,18 @@ const router = createBrowserRouter([
       {
         path: "/order",
         element: <OrderPage />,
+      },
+      {
+        path: "/about",
+        element: <AboutPage />,
+      },
+      {
+        path: "/contact",
+        element: <ContactPage />,
+      },
+      {
+        path: "/order",
+        element: <ContactPage />,
       },
     ],
   },

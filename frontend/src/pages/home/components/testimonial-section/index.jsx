@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 const testimonials = [
   {
@@ -70,11 +71,13 @@ export default function TestimonialSection() {
               </p>
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <img
-                    className="h-12 w-12 rounded-full"
-                    src={`/placeholder.svg?height=48&width=48`}
-                    alt={testimonials[currentIndex].name}
-                  />
+                  <Avatar>
+                    <AvatarImage
+                      src="https://github.com/shadcn.png"
+                      alt="@shadcn"
+                    />
+                    <AvatarFallback>CN</AvatarFallback>
+                  </Avatar>
                 </div>
                 <div className="ml-4">
                   <p className="text-lg font-medium text-gray-900">

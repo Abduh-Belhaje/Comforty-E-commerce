@@ -1,6 +1,8 @@
 import React from "react";
 import SliderSection from "./components/products-slider";
 import Sponsors from "./components/Sponsors";
+import RecentlyAdded from "./../products/components/RecentlyAdded";
+
 import TestimonialSection from "./components/testimonial-section";
 
 export default function Home() {
@@ -11,6 +13,7 @@ export default function Home() {
       {/* SPonsor */}
       <Sponsors />
       {/* Featured product */}
+      <RecentlyAdded />
       {/* Testimonial */}
       <TestimonialSection />
     </div>

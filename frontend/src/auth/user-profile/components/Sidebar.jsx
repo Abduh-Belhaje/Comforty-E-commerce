@@ -30,7 +30,9 @@ function Sidebar() {
     <Card className="h-[calc(100vh-2rem)] w-full max-w-[20rem] p-4 shadow-xl shadow-blue-gray-900/5">
       {/* Sidebar Header with Logo */}
       <div className="mb-4 p-4 border-b border-gray-200 flex items-center">
-        <img alt="Your Company Logo" src={Logo} className="h-8 w-auto mr-2" />
+        <Link to="/">
+          <img alt="Your Company Logo" src={Logo} className="h-8 w-auto mr-2" />
+        </Link>
       </div>
 
       {/* List of Links */}

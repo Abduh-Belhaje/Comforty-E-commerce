@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Bell, CreditCard, LogOut, Settings, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
   Card,
@@ -61,11 +62,13 @@ function UserInformation() {
             </TabsList>
             <TabsContent value="profile">
               <div className="flex items-center space-x-4">
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="h-20 w-20 rounded-full"
-                />
+                <Avatar>
+                  <AvatarImage
+                    src="https://github.com/shadcn.png"
+                    alt="@shadcn"
+                  />
+                  <AvatarFallback>CN</AvatarFallback>
+                </Avatar>
                 <div>
                   <h2 className="text-2xl font-bold">{user.name}</h2>
                   <p className="text-gray-500">{user.email}</p>

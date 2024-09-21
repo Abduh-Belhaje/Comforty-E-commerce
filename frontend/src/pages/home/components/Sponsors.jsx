@@ -2,7 +2,7 @@ import React from "react";
 
 function Sponsors() {
   return (
-    <div class="mx-auto grid max-w-screen-xl grid-cols-2 gap-8 text-gray-500 dark:text-gray-400 sm:grid-cols-3 sm:gap-12 lg:grid-cols-6 px-4">
+    <div class="mx-auto grid max-w-screen-xl grid-cols-2 gap-8 text-gray-500 dark:text-gray-400 sm:grid-cols-3 sm:gap-12 lg:grid-cols-6 px-4 py-8 my-10">
       <a href="#" class="flex items-center md:justify-center">
         <svg
           class="h-10 hover:text-gray-900 dark:hover:text-white"

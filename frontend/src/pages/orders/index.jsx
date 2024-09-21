@@ -20,47 +20,46 @@ import {
   QuestionMarkCircleIcon,
   XMarkIcon as XMarkIconMini,
 } from "@heroicons/react/20/solid";
-import { Elements } from '@stripe/react-stripe-js';
-import { loadStripe } from '@stripe/stripe-js';
+import { Elements } from "@stripe/react-stripe-js";
+import { loadStripe } from "@stripe/stripe-js";
 import PaymentHook from "../../hooks/PaymentHook";
 
-const stripePromise = loadStripe('pk_test_51PybixLlzEGfyWviEdwULImPm0ESaK19WNQOcVWrVLsJvNbusu6bQK4HgTa4nwtMMOyZElZ4yWIdO7KeaB9kdwaV00mufc5aco');
-
+const stripePromise = loadStripe(
+  "pk_test_51PybixLlzEGfyWviEdwULImPm0ESaK19WNQOcVWrVLsJvNbusu6bQK4HgTa4nwtMMOyZElZ4yWIdO7KeaB9kdwaV00mufc5aco"
+);
 
 export default function OrderPage() {
   const [bag, setBag] = useState([]);
-  const [pay,setPay] = useState(false)
-  
+  const [pay, setPay] = useState(false);
 
-  useEffect(()=>{
+  useEffect(() => {
     const savedBag = JSON.parse(localStorage.getItem("bag")) || [];
     setBag(savedBag);
-  },[])
+  }, []);
 
-  const calculateTotalPrice = ()=>{
+  const calculateTotalPrice = () => {
     let som = 0;
-    bag.forEach(item => {
-      som += calculateNewPrice(item.price,item.discount)
+    bag.forEach((item) => {
+      som += calculateNewPrice(item.price, item.discount);
     });
     return som;
-  }
+  };
 
-  const calculateNewPrice = (price,dscnt) => {
-    const discount = price * (dscnt / 100) ;
+  const calculateNewPrice = (price, dscnt) => {
+    const discount = price * (dscnt / 100);
     return price - discount;
-
-  }
-
+  };
 
   return (
-    <div className="bg-white z-0">
-      {
-        pay &&
-        <Elements stripe={stripePromise}>
-          <PaymentHook />
-        </Elements>
-      }
-      
+    <div className=" relative ">
+      <div className="absolute top-[20%] left-[50%] translate-x-[-50%] translate-y-[-50%] flex items-center justify-center min-h-screen w-[500px] z-50 ">
+        {pay && (
+          <Elements stripe={stripePromise}>
+            <PaymentHook />
+          </Elements>
+        )}
+      </div>
+
       {/* Mobile menu */}
 
       <main className="mx-auto max-w-2xl px-4 pb-24 pt-16 sm:px-6 lg:max-w-7xl lg:px-8">
@@ -69,7 +68,10 @@ export default function OrderPage() {
         </h1>
 
         <form className="mt-12 lg:grid lg:grid-cols-12 lg:items-start lg:gap-x-12 xl:gap-x-16">
-          <section aria-labelledby="cart-heading" className="lg:col-span-7 overflow-y-autp h-dvh overflow-y-scroll overflow-x-hidden">
+          <section
+            aria-labelledby="cart-heading"
+            className="lg:col-span-7 overflow-y-autp h-dvh overflow-y-scroll overflow-x-hidden"
+          >
             <h2 id="cart-heading" className="sr-only">
               Items in your shopping cart
             </h2>
@@ -81,10 +83,10 @@ export default function OrderPage() {
               {bag.map((product, productIdx) => (
                 <li key={product.name} className="flex py-6 sm:py-10">
                   <div className="flex-shrink-0">
-                    <img
+                    {/* <img
                       src={product.images[0]}
                       className="h-24 w-24 rounded-md object-cover object-center sm:h-48 sm:w-48"
-                    />
+                    /> */}
                   </div>
 
                   <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
@@ -92,15 +94,15 @@ export default function OrderPage() {
                       <div className="">
                         <div className="flex flex-col">
                           <h3 className="text-md font-medium">
-                              {product.name}
+                            {product.name}
                           </h3>
                           <p className="mt-1 text-sm font-medium text-green-700 py-5">
-                          ${product.price}
+                            ${product.price}
                           </p>
-                          <p className="text-sm text-gray-600">{product.description}</p>
+                          <p className="text-sm text-gray-600">
+                            {product.description}
+                          </p>
                         </div>
-                          
-                        
                       </div>
 
                       <div className="mt-4 sm:mt-0 sm:pr-9">
@@ -154,7 +156,7 @@ export default function OrderPage() {
                       )}
 
                       <span>
-                        {product.status 
+                        {product.status
                           ? "In stock"
                           : `Ships in ${product.leadTime}`}
                       </span>
@@ -180,7 +182,9 @@ export default function OrderPage() {
             <dl className="mt-6 space-y-4">
               <div className="flex items-center justify-between">
                 <dt className="text-sm text-gray-600">Subtotal</dt>
-                <dd className="text-sm font-medium text-gray-900">{bag && calculateTotalPrice()}</dd>
+                <dd className="text-sm font-medium text-gray-900">
+                  {bag && calculateTotalPrice()}
+                </dd>
               </div>
               <div className="flex items-center justify-between border-t border-gray-200 pt-4">
                 <dt className="flex items-center text-sm text-gray-600">
@@ -237,7 +241,6 @@ export default function OrderPage() {
             </div>
           </section>
         </form>
-
       </main>
     </div>
   );

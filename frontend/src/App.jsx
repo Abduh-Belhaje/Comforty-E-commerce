@@ -4,14 +4,11 @@ import Footer from "./components/custom/Footer";
 import { ProductProvider } from "./contexte/ProductContext";
 
 function App() {
-
   return (
     <>
-      <ProductProvider>
-        <Header />
-        <Outlet />
-        <Footer />
-      </ProductProvider>
+      <Header />
+      <Outlet />
+      <Footer />
     </>
   );
 }

@@ -39,7 +39,7 @@ Comforty E-commerce is a web application providing a seamless shopping experienc
 
   - Pull the Frontend image:
     ```sh
-       docker pull rida999/comforty:v2
+       docker pull rida999/comforty:v1.1
 
   - Run docker-compose file :
     ```sh
